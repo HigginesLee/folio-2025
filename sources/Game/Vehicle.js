@@ -10,8 +10,10 @@ export class Vehicle
         this.setChassis()
 
         this.controller = this.game.physics.world.createVehicleController(this.chassis.physical.body)
+        this.up = new THREE.Vector3(0, 1, 0)
 
         this.setWheels()
+        this.setJump()
 
         this.game.time.events.on('tick', () =>
         {
@@ -46,6 +48,7 @@ export class Vehicle
     setWheels()
     {
         const wheelsSetting = {
+            offset: new THREE.Vector3(0.75, -0.4,  0.8), // No default
             directionCs: new THREE.Vector3(0, -1, 0), // Suspension direction
             axleCs: new THREE.Vector3(-1, 0, 0),      // Rotation axis
             frictionSlip: 4,             // 10.5
@@ -57,7 +60,6 @@ export class Vehicle
             suspensionRelaxation: 1.88,  // 0.88
             suspensionRestLength: 0.125, // No default
             suspensionStiffness: 30,     // 5.88
-            offset: new THREE.Vector3(0.75, -0.2,  0.8), // No default
         }
         const wheelsPositions = [
             new THREE.Vector3(  wheelsSetting.offset.x, wheelsSetting.offset.y,   wheelsSetting.offset.z),
@@ -71,6 +73,7 @@ export class Vehicle
         this.wheels.engineForce = 0
         this.wheels.steering = 0
         this.wheels.visualSteering = 0
+        this.wheels.inContact = 0
 
         for(let i = 0; i < 4; i++)
         {
@@ -111,6 +114,33 @@ export class Vehicle
         }
     }
 
+    setJump()
+    {
+        this.jump = {}
+        this.jump.force = 8
+        this.jump.activate = () =>
+        {
+            if(this.wheels.inContact > 0)
+            {
+                const impulse = this.up.clone().multiplyScalar(this.jump.force * this.chassis.physical.body.mass())
+                this.chassis.physical.body.applyImpulse(impulse)
+
+                let torqueY = 0
+                if(this.game.controls.keys.left)
+                    torqueY = 2
+                else
+                    torqueY = -2
+                this.chassis.physical.body.applyTorqueImpulse({ x: 0, y: torqueY, z: 0 })
+            }
+        }
+
+        this.game.controls.events.on('jump', (_down) =>
+        {
+            if(_down)
+                this.jump.activate()
+        })
+    }
+
     updatePrePhysics()
     {
         this.wheels.engineForce = 0
@@ -138,6 +168,8 @@ export class Vehicle
     {
         this.wheels.visualSteering += (this.wheels.steering - this.wheels.visualSteering) * this.game.time.delta * 16
 
+        this.wheels.inContact = 0
+
         for(let i = 0; i < 4; i++)
         {
             const wheel = this.wheels.items[i]
@@ -146,6 +178,11 @@ export class Vehicle
             wheel.visual.rotation.y = this.wheels.visualSteering
 
             wheel.visual.position.y = wheel.basePosition.y - this.controller.wheelSuspensionLength(i)
+
+            if(this.controller.wheelIsInContact(i))
+                this.wheels.inContact++
         }
+
+        this.up.set(0, 1, 0).applyQuaternion(this.chassis.physical.body.rotation())
     }
 }
