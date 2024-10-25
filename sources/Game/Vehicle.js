@@ -33,7 +33,7 @@ export class Vehicle
         this.setJump()
         this.setStop()
         this.setFlip()
-        this.setStuck()
+        this.setUnstuck()
         this.setReset()
 
         this.game.time.events.on('tick', () =>
@@ -58,7 +58,7 @@ export class Vehicle
                 type: 'dynamic',
                 shape: 'cuboid',
                 position: { x: 0, y: 1, z: 0 },
-                // rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0.5),
+                rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(1, 0, 0), Math.PI * 0.5),
                 colliders: [ { shape: 'cuboid', parameters: [ 1.5, 0.5, 1 ] } ],
                 canSleep: false,
             },
@@ -185,8 +185,8 @@ export class Vehicle
         this.jump = {}
         this.jump.force = 8
         this.jump.turningTorque = 2
-        this.jump.recoverTorque = 4
-        this.jump.jumpUp = () =>
+
+        this.jump.activate = () =>
         {
             if(this.wheels.inContact > 0)
             {
@@ -202,19 +202,10 @@ export class Vehicle
             }
         }
 
-        this.jump.recover = () =>
-        {
-                const impulse = new THREE.Vector3(0, 1, 0).multiplyScalar(this.jump.force * this.chassis.physical.body.mass())
-                this.chassis.physical.body.applyImpulse(impulse)
-
-                const torque = this.jump.recoverTorque * this.upsideDownRatio
-                this.chassis.physical.body.applyTorqueImpulse({ x: torque * 0.6, y: 0, z: torque })
-        }
-
         this.game.inputs.events.on('jump', (_down) =>
         {
             if(_down)
-                this.jump.jumpUp()
+                this.jump.activate()
         })
         
         // Debug
@@ -227,7 +218,6 @@ export class Vehicle
 
             panel.addBinding(this.jump, 'force', { min: 0, max: 20, step: 0.01 })
             panel.addBinding(this.jump, 'turningTorque', { min: 0, max: 10, step: 0.01 })
-            panel.addBinding(this.jump, 'recoverTorque', { min: 0, max: 10, step: 0.01 })
         }
     }
 
@@ -270,33 +260,55 @@ export class Vehicle
         }
     }
 
-    setStuck()
+    setUnstuck()
     {
-        this.stuck = {}
-        this.stuck.duration = 3
-        this.stuck.timeout = null
-        this.stuck.test = () =>
+        this.unstuck = {}
+        this.unstuck.duration = 3
+        this.unstuck.timeout = null
+        this.unstuck.force = 8
+        this.unstuck.torque = 4
+
+        this.unstuck.test = () =>
         {
             if(this.flip.active && this.stop.active)
             {
-                clearTimeout(this.stuck.timeout)
-                this.stuck.timeout = setTimeout(() =>
+                clearTimeout(this.unstuck.timeout)
+                this.unstuck.timeout = setTimeout(() =>
                 {
                     if(this.flip.active && this.stop.active)
-                        this.jump.recover()
+                        this.unstuck.activate()
                 }, 1000)
             }
         }
 
+        this.unstuck.activate = () =>
+        {
+            const impulse = new THREE.Vector3(0, 1, 0).multiplyScalar(this.unstuck.force * this.chassis.physical.body.mass())
+            this.chassis.physical.body.applyImpulse(impulse)
+
+            const torque = this.unstuck.torque * this.upsideDownRatio
+            this.chassis.physical.body.applyTorqueImpulse({ x: torque * 0.6, y: 0, z: torque })
+        }
+
         this.events.on('flip', () =>
         {
-            this.stuck.test()
+            this.unstuck.test()
         })
 
         this.events.on('stop', () =>
         {
-            this.stuck.test()
+            this.unstuck.test()
         })
+
+        if(this.game.debug.active)
+        {
+            const panel = this.debugPanel.addFolder({
+                title: '🔄 Unstuck',
+                expanded: true,
+            })
+
+            panel.addBinding(this.unstuck, 'torque', { min: 0, max: 10, step: 0.01 })
+        }
     }
 
     setReset()
