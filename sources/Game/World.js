@@ -15,8 +15,9 @@ export class World
         this.setGround()
         // this.setDummy()
 
-        // const axesHelper = new THREE.AxesHelper()
-        // this.scene.add(axesHelper)
+        const axesHelper = new THREE.AxesHelper()
+        axesHelper.position.y = 2
+        this.scene.add(axesHelper)
 
         this.game.time.events.on('tick', () =>
         {

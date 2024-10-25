@@ -13,12 +13,12 @@ export class Vehicle
         this.setChassis()
 
         this.controller = this.game.physics.world.createVehicleController(this.chassis.physical.body)
+        // this.controller.setIndexForwardAxis = 2
 
         this.up = new THREE.Vector3(0, 1, 0)
         this.position = new THREE.Vector3()
-        this.positionDelta = new THREE.Vector3()
-        this.velocity = new THREE.Vector3()
         this.speed = 0
+        this.absoluteSpeed = 0
         this.upsideDownRatio = 0
 
         if(this.game.debug.active)
@@ -49,7 +49,7 @@ export class Vehicle
     setChassis()
     {
         const visual = new THREE.Mesh(
-            new THREE.BoxGeometry(1 * 2, 0.5 * 2, 1.5 * 2),
+            new THREE.BoxGeometry(1.5 * 2, 0.5 * 2, 1 * 2),
             new THREE.MeshNormalMaterial({ wireframe: true })
         )
         this.game.world.scene.add(visual)
@@ -58,8 +58,8 @@ export class Vehicle
                 type: 'dynamic',
                 shape: 'cuboid',
                 position: { x: 0, y: 1, z: 0 },
-                rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0.5),
-                colliders: [ { shape: 'cuboid', parameters: [ 1, 0.5, 1.5 ] } ],
+                // rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), Math.PI * 0.5),
+                colliders: [ { shape: 'cuboid', parameters: [ 1.5, 0.5, 1 ] } ],
                 canSleep: false,
             },
             visual
@@ -81,6 +81,10 @@ export class Vehicle
         this.wheels.brakeStrength = 15
         this.wheels.brakePerpetualStrength = 2.88
 
+        // Geometry
+        const wheelGeometry = new THREE.CylinderGeometry(1, 1, 0.5, 8)
+        wheelGeometry.rotateX(Math.PI * 0.5)
+
         // Create wheels
         for(let i = 0; i < 4; i++)
         {
@@ -89,10 +93,9 @@ export class Vehicle
 
             // Visual
             const visual = new THREE.Mesh(
-                new THREE.CylinderGeometry(1, 1, 0.5, 8),
+                wheelGeometry,
                 new THREE.MeshNormalMaterial({ flatShading: true })
             )
-            visual.geometry.rotateZ(Math.PI * 0.5)
             visual.rotation.reorder('YXZ')
             this.chassis.visual.add(visual)
             this.wheels.items.push({ visual, basePosition: new THREE.Vector3() })
@@ -100,10 +103,10 @@ export class Vehicle
 
         // Settings
         this.wheels.settings = {
-            offset: { x: 0.75, y: -0.4, z: 0.8 }, // No default
+            offset: { x: 0.8, y: -0.4, z: 0.75 }, // No default
             radius: 0.5,                          // No default
             directionCs: { x: 0, y: -1, z: 0 },   // Suspension direction
-            axleCs: { x: -1, y: 0, z: 0 },        // Rotation axis
+            axleCs: { x: 0, y: 0, z: 1 },         // Rotation axis
             frictionSlip: 0.9,                    // 10.5
             maxSuspensionForce: 100,              // 100
             maxSuspensionTravel: 2,               // 5
@@ -141,7 +144,7 @@ export class Vehicle
                 this.controller.setWheelSuspensionRestLength(i, this.wheels.settings.suspensionRestLength)
                 this.controller.setWheelSuspensionStiffness(i, this.wheels.settings.suspensionStiffness)
 
-                wheel.visual.scale.set(1, this.wheels.settings.radius, this.wheels.settings.radius)
+                wheel.visual.scale.set(this.wheels.settings.radius, this.wheels.settings.radius, 1)
                 wheel.visual.position.copy(wheel.basePosition)
 
                 i++
@@ -332,7 +335,7 @@ export class Vehicle
         if(this.game.inputs.keys.left)
             this.wheels.steering += this.wheels.steeringMax
         this.controller.setWheelSteering(0, this.wheels.steering)
-        this.controller.setWheelSteering(2, this.wheels.steering)
+        this.controller.setWheelSteering(1, this.wheels.steering)
 
         let brake = this.wheels.brakePerpetualStrength
         if(this.game.inputs.keys.brake)
@@ -351,12 +354,10 @@ export class Vehicle
     updatePostPhysics()
     {
         // Various measures
-        const newPosition = this.chassis.physical.body.translation()
-        this.positionDelta = this.positionDelta.copy(newPosition).sub(this.position)
-        this.position.copy(newPosition)
-
+        this.position.copy(this.chassis.physical.body.translation())
         this.up.set(0, 1, 0).applyQuaternion(this.chassis.physical.body.rotation())
-        this.speed = this.positionDelta.length() / this.game.time.deltaScaled // Units per seconds
+        this.speed = this.controller.currentVehicleSpeed()
+        this.absoluteSpeed = Math.abs(this.speed)
         this.upsideDownRatio = this.up.dot(new THREE.Vector3(0, - 1, 0)) * 0.5 + 0.5
         
         // Wheels
@@ -368,9 +369,9 @@ export class Vehicle
         {
             const wheel = this.wheels.items[i]
 
-            wheel.visual.rotation.x += this.wheels.engineForce * 1.5 * this.game.time.deltaScaled
+            wheel.visual.rotation.z -= this.wheels.engineForce * 0.02 * this.game.time.deltaScaled
 
-            if(i === 0 || i === 2)
+            if(i === 0 || i === 1)
                 wheel.visual.rotation.y = this.wheels.visualSteering
 
             wheel.visual.position.y = wheel.basePosition.y - this.controller.wheelSuspensionLength(i)
@@ -380,12 +381,12 @@ export class Vehicle
         }
 
         // Stop
-        if(this.speed < this.stop.lowEdge)
+        if(this.absoluteSpeed < this.stop.lowEdge)
         {
             if(!this.stop.active)
                 this.stop.activate()
         }
-        else if(this.speed > this.stop.highEdge)
+        else if(this.absoluteSpeed > this.stop.highEdge)
         {
             if(this.stop.active)
                 this.stop.deactivate()
