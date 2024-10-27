@@ -15,7 +15,6 @@
     "three": "^0.169.0",
     "tweakpane": "^4.0.4",
     "vite": "^5.4.8",
-    "vite-plugin-restart": "^0.4.1",
-    "vite-plugin-wasm": "^3.3.0"
+    "vite-plugin-restart": "^0.4.1"
   }
 }

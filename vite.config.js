@@ -1,5 +1,4 @@
 import restart from 'vite-plugin-restart'
-import wasm from 'vite-plugin-wasm'
 
 export default {
     root: 'sources/', // Sources files (typically where index.html is)
@@ -17,7 +16,6 @@ export default {
     },
     plugins:
     [
-        restart({ restart: [ '../static/**', ] }), // Restart server on static file change
-        wasm()
+        restart({ restart: [ '../static/**', ] }) // Restart server on static file change
     ],
 }
