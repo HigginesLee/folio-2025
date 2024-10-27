@@ -67,7 +67,7 @@ export class World
     {
         const dummy = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshNormalMaterial()
+            new THREE.MeshNormalNodeMaterial()
         )
         this.scene.add(dummy)
 
