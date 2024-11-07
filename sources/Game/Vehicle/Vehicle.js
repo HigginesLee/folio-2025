@@ -487,7 +487,7 @@ export class Vehicle
         }
 
         // View
-        this.game.view.focusPoint.copy(this.position)
+        this.game.view.focusPoint.trackedPosition.copy(this.position)
 
         if(this.game.inputs.keys.boost && (this.game.inputs.keys.forward || this.game.inputs.keys.backward) && this.absoluteSpeed > 5)
             this.game.view.speedLines.targetStrength = 0.8

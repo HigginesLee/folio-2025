@@ -39,6 +39,7 @@ export class Game
         // this.scene.fogNode = rangeFog(color(0x1b191f), 20, 100)
 
         this.debug = new Debug()
+        this.time = new Time()
         this.inputs = new Inputs([
             { name: 'forward', keys: [ 'ArrowUp', 'KeyW' ] },
             { name: 'right', keys: [ 'ArrowRight', 'KeyD' ] },
@@ -57,7 +58,6 @@ export class Game
             { name: 'hydraulicsBackRight', keys: [ 'Numpad3' ] },
             { name: 'hydraulicsBackLeft', keys: [ 'Numpad1' ] },
         ])
-        this.time = new Time()
         this.viewport = new Viewport(this.domElement)
         this.resources = new Resources()
         this.physics = new Physics()

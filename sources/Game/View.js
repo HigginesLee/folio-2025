@@ -14,54 +14,6 @@ export class View
 
         this.mode = 'default'
 
-        this.focusPoint = new THREE.Vector3()
-        this.smoothedFocusPoint = new THREE.Vector3()
-
-        this.phi = Math.PI * 0.35
-        this.theta = Math.PI * 0.25
-
-        this.sphericalOffset = new THREE.Vector3()
-
-        this.zoom = {}
-        this.zoom.baseRatio = 0.25
-        this.zoom.ratio = this.zoom.baseRatio
-        this.zoom.smoothedRatio = this.zoom.baseRatio
-        this.zoom.speedAmplitude = - 0.5
-        this.zoom.speedEdgeLow = 5
-        this.zoom.speedEdgeHigh = 40
-        this.zoom.sensitivity = 0.05
-
-        this.radius = {}
-        this.radius.min = 10
-        this.radius.max = 30
-        this.radius.current = lerp(this.radius.min, this.radius.max, 1 - this.zoom.smoothedRatio)
-
-        this.game.inputs.events.on('zoom', (zoomValue) =>
-        {
-            this.zoom.baseRatio -= zoomValue * this.zoom.sensitivity
-            this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
-        })
-
-        this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 1000)
-        this.camera.position.setFromSphericalCoords(this.radius.current, this.phi, this.theta)
-        this.game.scene.add(this.camera)
-
-        this.cameraControls = new CameraControls(this.camera, this.game.domElement)
-        this.cameraControls.enabled = this.mode === 'controls'
-        this.cameraControls.smoothTime = 0.075
-        this.cameraControls.draggingSmoothTime = 0.075
-        this.cameraControls.dollySpeed = 0.2
-
-        this.game.time.events.on('tick', () =>
-        {
-            this.update()
-        }, 3)
-
-        this.game.viewport.events.on('change', () =>
-        {
-            this.resize()
-        })
-
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
@@ -76,27 +28,70 @@ export class View
                     options:
                     {
                         default: 'default',
-                        controls: 'controls',
+                        debugControls: 'debugControls',
                     }
                 }
             ).on('change', () => 
             {
-                this.smoothedFocusPoint.copy(this.focusPoint)
+                this.focusPoint.smoothedPosition.copy(this.focusPoint.position)
 
-                this.cameraControls.enabled = this.mode === 'controls'
-                this.cameraControls.setTarget(this.focusPoint.x, this.focusPoint.y, this.focusPoint.z)
-                this.cameraControls.setPosition(this.camera.position.x, this.camera.position.y, this.camera.position.z)
+                this.debugControls.enabled = this.mode === 'debugControls'
+                this.debugControls.setTarget(this.focusPoint.position.x, this.focusPoint.position.y, this.focusPoint.position.z)
+                this.debugControls.setPosition(this.camera.position.x, this.camera.position.y, this.camera.position.z)
             })
-            
-            const sphericalDebugPanel = this.debugPanel.addFolder({
-                title: 'Spherical',
-                expanded: true,
-            })
-            sphericalDebugPanel.addBinding(this, 'phi', { min: 0, max: Math.PI * 0.5, step: 0.001 })
-            sphericalDebugPanel.addBinding(this, 'theta', { min: - Math.PI, max: Math.PI, step: 0.001 })
-            sphericalDebugPanel.addBinding(this.radius, 'min', { label: 'zoomMin', min: 0, max: 100, step: 0.001 })
-            sphericalDebugPanel.addBinding(this.radius, 'max', { label: 'zoomMax', min: 0, max: 100, step: 0.001 })
-            
+        }
+
+        this.setFocusPoint()
+        this.setZoom()
+        this.setSpherical()
+        this.setCamera()
+        this.setDebugControls()
+        this.setSpeedLines()
+
+        this.game.time.events.on('tick', () =>
+        {
+            this.update()
+        }, 3)
+
+        this.game.viewport.events.on('change', () =>
+        {
+            this.resize()
+        })
+    }
+
+    setFocusPoint()
+    {
+        this.focusPoint = {}
+        this.focusPoint.trackedPosition = new THREE.Vector3()
+        this.focusPoint.isTracking = true
+        this.focusPoint.position = new THREE.Vector3()
+        this.focusPoint.smoothedPosition = new THREE.Vector3()
+
+        this.game.inputs.events.on('keyDown', () =>
+        {
+            this.focusPoint.isTracking = true
+        })
+    }
+
+    setZoom()
+    {
+        this.zoom = {}
+        this.zoom.baseRatio = 0.25
+        this.zoom.ratio = this.zoom.baseRatio
+        this.zoom.smoothedRatio = this.zoom.baseRatio
+        this.zoom.speedAmplitude = - 0.4
+        this.zoom.speedEdgeLow = 5
+        this.zoom.speedEdgeHigh = 40
+        this.zoom.sensitivity = 0.05
+
+        this.game.inputs.events.on('zoom', (zoomValue) =>
+        {
+            this.zoom.baseRatio -= zoomValue * this.zoom.sensitivity
+            this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
+        })
+
+        if(this.game.debug.active)
+        {
             const zoomDebugPanel = this.debugPanel.addFolder({
                 title: 'Zoom',
                 expanded: true,
@@ -106,8 +101,48 @@ export class View
             zoomDebugPanel.addBinding(this.zoom, 'speedEdgeHigh', { min: 0, max: 100, step: 0.001 })
             zoomDebugPanel.addBinding(this.zoom, 'sensitivity', { min: 0, max: 0.5, step: 0.0001 })
         }
+    }
 
-        this.setSpeedLines()
+    setSpherical()
+    {
+        this.spherical = {}
+        this.spherical.phi = Math.PI * 0.35
+        this.spherical.theta = Math.PI * 0.25
+
+        this.spherical.offset = new THREE.Vector3()
+
+        this.spherical.radius = {}
+        this.spherical.radius.min = 10
+        this.spherical.radius.max = 30
+        this.spherical.radius.current = lerp(this.spherical.radius.min, this.spherical.radius.max, 1 - this.zoom.smoothedRatio)
+
+        if(this.game.debug.active)
+        {
+            const sphericalDebugPanel = this.debugPanel.addFolder({
+                title: 'Spherical',
+                expanded: true,
+            })
+            sphericalDebugPanel.addBinding(this.spherical, 'phi', { min: 0, max: Math.PI * 0.5, step: 0.001 })
+            sphericalDebugPanel.addBinding(this.spherical, 'theta', { min: - Math.PI, max: Math.PI, step: 0.001 })
+            sphericalDebugPanel.addBinding(this.spherical.radius, 'min', { label: 'zoomMin', min: 0, max: 100, step: 0.001 })
+            sphericalDebugPanel.addBinding(this.spherical.radius, 'max', { label: 'zoomMax', min: 0, max: 100, step: 0.001 })
+        }
+    }
+
+    setCamera()
+    {
+        this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 1000)
+        this.camera.position.setFromSphericalCoords(this.spherical.radius.current, this.spherical.phi, this.spherical.theta)
+        this.game.scene.add(this.camera)
+    }
+
+    setDebugControls()
+    {
+        this.debugControls = new CameraControls(this.camera, this.game.domElement)
+        this.debugControls.enabled = this.mode === 'debugControls'
+        this.debugControls.smoothTime = 0.075
+        this.debugControls.draggingSmoothTime = 0.075
+        this.debugControls.dollySpeed = 0.2
     }
 
     setSpeedLines()
@@ -210,34 +245,53 @@ export class View
         // Default mode
         if(this.mode === 'default')
         {
-            // Target
-            const newSmoothTarget = this.smoothedFocusPoint.clone().lerp(this.focusPoint, this.game.time.delta * 10)
-            const smoothTargetDelta = newSmoothTarget.clone().sub(this.smoothedFocusPoint)
-            const targetSpeed = Math.hypot(smoothTargetDelta.x, smoothTargetDelta.z) / this.game.time.delta
-            this.smoothedFocusPoint.copy(newSmoothTarget)
+            // Focus point
+            if(this.game.inputs.pointer.isDown)
+            {
+                this.focusPoint.isTracking = false
+                
+                const mapMovement = new THREE.Vector2(this.game.inputs.pointer.delta.x, this.game.inputs.pointer.delta.y)
+                mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
+                mapMovement.multiplyScalar(0.01)
+                
+                this.focusPoint.position.x -= mapMovement.x
+                this.focusPoint.position.z -= mapMovement.y
+            }
+
+            if(this.focusPoint.isTracking)
+                this.focusPoint.position.copy(this.focusPoint.trackedPosition)
+
+            const newSmoothFocusPoint = this.focusPoint.smoothedPosition.clone().lerp(this.focusPoint.position, this.game.time.delta * 10)
+            const smoothFocusPointDelta = newSmoothFocusPoint.clone().sub(this.focusPoint.smoothedPosition)
+            const focusPointSpeed = Math.hypot(smoothFocusPointDelta.x, smoothFocusPointDelta.z) / this.game.time.delta
+            this.focusPoint.smoothedPosition.copy(newSmoothFocusPoint)
             
             // Zoom
-            const zoomSpeedRatio = smoothstep(targetSpeed, this.zoom.speedEdgeLow, this.zoom.speedEdgeHigh)
-            this.zoom.ratio = this.zoom.baseRatio + this.zoom.speedAmplitude * zoomSpeedRatio
+            const zoomSpeedRatio = smoothstep(focusPointSpeed, this.zoom.speedEdgeLow, this.zoom.speedEdgeHigh)
+            this.zoom.ratio = this.zoom.baseRatio
+
+            if(this.focusPoint.isTracking)
+                this.zoom.ratio += this.zoom.speedAmplitude * zoomSpeedRatio
+
             this.zoom.smoothedRatio = lerp(this.zoom.smoothedRatio, this.zoom.ratio, this.game.time.delta * 10)
 
             // Radius
-            this.radius.current = lerp(this.radius.min, this.radius.max, 1 - this.zoom.smoothedRatio)
+            this.spherical.radius.current = lerp(this.spherical.radius.min, this.spherical.radius.max, 1 - this.zoom.smoothedRatio)
             
             // Spherical offset
-            this.sphericalOffset.setFromSphericalCoords(this.radius.current, this.phi, this.theta)
+            this.spherical.offset.setFromSphericalCoords(this.spherical.radius.current, this.spherical.phi, this.spherical.theta)
 
             // Position
-            this.camera.position.copy(this.smoothedFocusPoint).add(this.sphericalOffset)
+            this.camera.position.copy(this.focusPoint.smoothedPosition).add(this.spherical.offset)
 
             // Look at
-            this.camera.lookAt(this.smoothedFocusPoint)
+            this.camera.lookAt(this.focusPoint.smoothedPosition)
         }
         
         // Controls mode
         else
         {
-            this.cameraControls.update(this.game.time.delta)
+            this.debugControls.update(this.game.time.delta)
         }
 
         // Speed lines

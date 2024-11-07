@@ -1,26 +1,60 @@
 import normalizeWheel from 'normalize-wheel'
+import * as THREE from 'three'
 
 import { Events } from './Events.js'
+import { Game } from './Game.js'
 
 export class Inputs
 {
     constructor(_map)
     {
+        this.game = new Game()
         this.events = new Events()
 
         this.map = _map
 
         this.setKeys()
+        this.setPointer()
         this.setWheel()
     }
 
     setWheel()
     {
-        addEventListener('wheel', (event) =>
+        addEventListener('wheel', (_event) =>
         {
-            const normalized = normalizeWheel(event)
+            const normalized = normalizeWheel(_event)
             this.events.trigger('zoom', [ normalized.spinY ])
+        }, { passive: true })
+    }
+
+    setPointer()
+    {
+        this.pointer = {}
+        this.pointer.current = new THREE.Vector2()
+        this.pointer.delta = new THREE.Vector2()
+        this.pointer.upcoming = new THREE.Vector2()
+        this.pointer.isDown = false
+
+        addEventListener('pointermove', (_event) =>
+        {
+            this.pointer.upcoming.set(_event.clientX, _event.clientY)
         })
+
+        addEventListener('pointerdown', (_event) =>
+        {
+            this.pointer.isDown = true
+        })
+
+        addEventListener('pointerup', (_event) =>
+        {
+            this.pointer.isDown = false
+        })
+
+        this.game.time.events.on('tick', () =>
+        {
+            this.pointer.delta.copy(this.pointer.upcoming).sub(this.pointer.current)
+            this.pointer.current.copy(this.pointer.upcoming)
+        }, 0)
     }
 
     setKeys()
@@ -48,6 +82,7 @@ export class Inputs
         if(map && !this.keys[map.name])
         {
             this.keys[map.name] = true
+            this.events.trigger('keyDown', [ { down: true, name: map.name } ])
             this.events.trigger(map.name, [ { down: true, name: map.name } ])
         }
     }
@@ -59,6 +94,7 @@ export class Inputs
         if(map && this.keys[map.name])
         {
             this.keys[map.name] = false
+            this.events.trigger('keyUp', [ { down: false, name: map.name } ])
             this.events.trigger(map.name, [ { down: false, name: map.name } ])
         }
     }
