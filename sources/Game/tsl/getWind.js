@@ -1,4 +1,4 @@
-import { sin, cos, time, vec2, Fn, texture } from 'three'
+import { time, vec2, Fn, texture } from 'three'
 
 export default Fn(([ noisesTexture, worldPosition ]) =>
 {

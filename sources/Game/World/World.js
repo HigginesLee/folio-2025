@@ -13,7 +13,7 @@ export class World
         this.game = new Game()
 
         this.floor = new Floor()
-        // this.bush = new Bush()
+        this.bush = new Bush()
         this.grass = new Grass()
         // this.setTestCube()
 
