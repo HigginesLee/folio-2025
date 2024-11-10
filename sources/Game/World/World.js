@@ -14,7 +14,7 @@ export class World
         this.game = new Game()
 
         this.floor = new Floor()
-        this.grass = new Grass()
+        // this.grass = new Grass()
         // this.setTestCube()
 
         // const axesHelper = new THREE.AxesHelper()

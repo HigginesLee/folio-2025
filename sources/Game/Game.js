@@ -69,7 +69,6 @@ export class Game
         this.view = new View()
         this.rendering = new Rendering()
         this.monitoring = new Monitoring()
-
     }
 }
 

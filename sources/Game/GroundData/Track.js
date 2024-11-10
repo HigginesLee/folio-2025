@@ -37,12 +37,11 @@ export class Track
         this.trail = {}
         this.trail.geometry = new THREE.PlaneGeometry(1, 1, this.subdivisions, 1)
         this.trail.geometry.translate(0.5, 0, 0)
-        // this.trail.geometry.rotateX(Math.PI * 0.5)
         
         this.trail.material = new THREE.MeshBasicNodeMaterial({ wireframe: false, depthTest: false, transparent: true })
 
         const trackData = varying(vec4())
-        
+
         this.trail.material.positionNode = Fn(() =>
         {
             const fragmentSize = float(1).div(this.subdivisions)

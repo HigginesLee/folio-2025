@@ -45,7 +45,7 @@ export class Grass
     setGeometry()
     {
         const position = new Float32Array(this.count * 3 * 2)
-        const randomness = new Float32Array(this.count * 3)
+        const heightRandomness = new Float32Array(this.count * 3)
 
         for(let iX = 0; iX < this.subdivisions; iX++)
         {
@@ -73,16 +73,16 @@ export class Grass
                 position[i6 + 5] = positionZ
 
                 // Randomness
-                randomness[i3    ] = Math.random()
-                randomness[i3 + 1] = Math.random()
-                randomness[i3 + 2] = Math.random()
+                heightRandomness[i3    ] = Math.random()
+                heightRandomness[i3 + 1] = Math.random()
+                heightRandomness[i3 + 2] = Math.random()
             }
         }
         
         this.geometry = new THREE.BufferGeometry()
         this.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1)
         this.geometry.setAttribute('position', new THREE.Float32BufferAttribute(position, 2))
-        this.geometry.setAttribute('randomness', new THREE.Float32BufferAttribute(randomness, 1))
+        this.geometry.setAttribute('heightRandomness', new THREE.Float32BufferAttribute(heightRandomness, 1))
     }
 
     setMaterial()
@@ -137,7 +137,7 @@ export class Grass
 
             // Height
             const height = bladeHeight
-                .mul(bladeHeightRandomness.mul(attribute('randomness')).add(bladeHeightRandomness.oneMinus()))
+                .mul(bladeHeightRandomness.mul(attribute('heightRandomness')).add(bladeHeightRandomness.oneMinus()))
                 .mul(wheelsTracksHeight)
 
             // Shape
@@ -169,9 +169,9 @@ export class Grass
 
         this.material.outputNode = Fn(() =>
         {
-            const colorVariationUv = texture(this.resources.noisesTexture, bladePosition.mul(0.01))
+            const colorVariationUv = texture(this.resources.noisesTexture, bladePosition.mul(0.02)).smoothstep(0.4, 0.6)
 
-            const inverseMatcapUV = matcapUV.sub(0.5).mul(-1).add(0.5).toVar()
+            const inverseMatcapUV = matcapUV.sub(0.5).mul(-0.5).add(0.5).toVar()
             const newMatcapUv = mix(matcapUV, inverseMatcapUV, colorVariationUv.r)
 
             const matcapColor = texture(this.resources.matcapGrassOnGreen, newMatcapUv)
