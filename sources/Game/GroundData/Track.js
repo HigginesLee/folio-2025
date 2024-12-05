@@ -1,6 +1,6 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { screenUV, mul, cos, sin, sign, atan2, varying, float, uv, texture, Fn, vec2, vec3, vec4, positionGeometry } from 'three'
+import { screenUV, mul, cos, sin, sign, atan2, varying, float, uv, texture, Fn, vec2, vec3, vec4, positionGeometry } from 'three/tsl'
 
 export class Track
 {

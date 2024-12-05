@@ -1,5 +1,5 @@
 import normalizeWheel from 'normalize-wheel'
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 
 import { Events } from './Events.js'
 import { Game } from './Game.js'

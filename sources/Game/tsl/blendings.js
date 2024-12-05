@@ -1,4 +1,4 @@
-import { max, float, min, Fn, vec3, sub, overloadingFn } from 'three';
+import { max, float, min, Fn, vec3, sub, overloadingFn } from 'three/tsl';
 
 export const blendDarken_0 = /*#__PURE__*/ Fn( ( [ base_immutable, blend_immutable ] ) => {
 

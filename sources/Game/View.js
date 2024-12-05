@@ -1,8 +1,8 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import CameraControls from 'camera-controls'
 import { Game } from './Game.js'
 import { clamp, lerp, remap, smoothstep } from './utilities/maths.js'
-import { mix, vec2, atan2, cos, sin, uniform, PI, vec3, time, modelViewMatrix, cameraProjectionMatrix, viewport, vec4, Fn, positionGeometry, positionLocal, attribute } from 'three'
+import { mix, vec2, atan2, cos, sin, uniform, PI, vec3, time, modelViewMatrix, cameraProjectionMatrix, viewport, vec4, Fn, positionGeometry, positionLocal, attribute } from 'three/tsl'
 
 CameraControls.install( { THREE: THREE } )
 

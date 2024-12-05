@@ -1,5 +1,5 @@
 import { Game } from '../Game.js'
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 
 export class PhysicsWireframe
 {

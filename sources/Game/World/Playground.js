@@ -1,6 +1,4 @@
-import * as THREE from 'three'
 import { Game } from '../Game.js'
-import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
 export class Playground
 {

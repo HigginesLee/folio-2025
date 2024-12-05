@@ -1,5 +1,5 @@
-import * as THREE from 'three'
-import { pass, mrt, output, emissive } from 'three'
+import * as THREE from 'three/webgpu'
+import { pass, mrt, output, emissive } from 'three/tsl'
 import { bloom } from 'three/addons/tsl/display/BloomNode.js'
 import { Game } from './Game.js'
 

@@ -1,6 +1,6 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
-import { uniform, color } from 'three'
+import { uniform, color } from 'three/tsl'
 
 export class Lighting
 {

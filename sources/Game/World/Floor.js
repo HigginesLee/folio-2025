@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
 

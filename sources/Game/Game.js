@@ -1,5 +1,5 @@
 import RAPIER from '@dimforge/rapier3d-compat'
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 
 import { Debug } from './Debug.js'
 import { Inputs } from './Inputs.js'

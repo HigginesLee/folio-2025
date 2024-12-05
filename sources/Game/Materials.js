@@ -1,5 +1,5 @@
-import * as THREE from 'three'
-import { positionLocal, varying, uv, max, positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld } from 'three'
+import * as THREE from 'three/webgpu'
+import { positionLocal, varying, uv, max, positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld } from 'three/tsl'
 import { Game } from './Game.js'
 import { blendDarken_2 } from './tsl/blendings.js'
 

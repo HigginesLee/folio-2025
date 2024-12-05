@@ -1,4 +1,4 @@
-import { time, vec2, Fn, texture } from 'three'
+import { time, vec2, Fn, texture } from 'three/tsl'
 
 export default Fn(([noisesTexture, position]) =>
 {

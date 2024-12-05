@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { Bushes } from './Bushes.js'
 import { Floor } from './Floor.js'

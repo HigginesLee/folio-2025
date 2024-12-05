@@ -1,6 +1,6 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { mul, max, step, output, color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform } from 'three'
+import { mul, max, step, output, color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform } from 'three/tsl'
 import getWind from '../tsl/getWind.js'
 
 export class Grass

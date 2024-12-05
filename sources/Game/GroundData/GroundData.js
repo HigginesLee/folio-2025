@@ -1,7 +1,7 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { Track } from './Track.js'
-import { vec3, vec2, viewportSize, Fn, vec4, attribute } from 'three'
+import { vec3, vec2, viewportSize, Fn, vec4, attribute } from 'three/tsl'
 
 export class GroundData
 {
