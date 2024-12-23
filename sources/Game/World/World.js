@@ -15,10 +15,10 @@ export class World
         this.game = Game.getInstance()
 
         this.floor = new Floor()
-        this.grass = new Grass()
+        // this.grass = new Grass()
         this.bushes = new Bushes()
-        this.flowers = new Flowers()
-        this.playground = new Playground()
+        // this.flowers = new Flowers()
+        // this.playground = new Playground()
         this.bricksWalls = new BricksWalls()
         // this.setTestCube()
         // this.setTestShadow()

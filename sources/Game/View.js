@@ -12,7 +12,7 @@ export class View
     {
         this.game = Game.getInstance()
 
-        this.mode = 'default'
+        this.mode = 'debugControls'
         this.position = new THREE.Vector3()
 
         if(this.game.debug.active)

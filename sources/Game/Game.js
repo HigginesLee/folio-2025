@@ -49,12 +49,17 @@ export class Game
                     { path: 'playground/playgroundPhysical.glb', type: 'gltf', name: 'playgroundPhysical' },
                     { path: 'floor/keys.png', type: 'texture', name: 'floorKeysTexture' },
                     { path: 'bricksWalls/bricksWalls.glb', type: 'gltf', name: 'bricksWalls' },
+                    { path: 'terrain/terrain.png', type: 'texture', name: 'terrainTexture' },
+                    { path: 'terrain/terrain.glb', type: 'gltf', name: 'terrainModel' },
                 ],
                 (resources) =>
                 {
                     this.resources = resources
+
                     this.resources.noisesTexture.wrapS = THREE.RepeatWrapping
                     this.resources.noisesTexture.wrapT = THREE.RepeatWrapping
+
+                    this.resources.terrainTexture.flipY = false
 
                     // Init
                     this.init()

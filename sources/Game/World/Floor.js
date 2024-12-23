@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
-import { output, vec4 } from 'three/tsl'
+import { color, mix, output, positionGeometry, positionLocal, remap, remapClamp, smoothstep, texture, uniform, uv, vec3, vec4 } from 'three/tsl'
 
 export class Floor
 {
@@ -11,7 +11,7 @@ export class Floor
 
         // this.setGrid()
         this.setGround()
-        this.setKeys()
+        // this.setKeys()
         this.setPhysical()
 
         this.game.time.events.on('tick', () =>
@@ -22,15 +22,59 @@ export class Floor
 
     setGround()
     {
-        const geometry = new THREE.PlaneGeometry(80, 80, 1, 1)
-        geometry.rotateX(- Math.PI * 0.5)
+        // console.log(this.game.resources.terrainModel.scene.children[0].geometry)
+        const geometry = this.game.resources.terrainModel.scene.children[0].geometry
+        // geometry.rotateX(- Math.PI * 0.5)
 
-        const material = new THREE.MeshLambertNodeMaterial({ color: '#000000' })
-        const foggedColor = this.game.fog.fogStrength.mix(output.rgb, this.game.fog.fogColor)
-        material.outputNode = vec4(foggedColor, 1)
+        const material = new THREE.MeshLambertNodeMaterial({ color: '#000000', wireframe: false })
+
+        // Terrain data
+        const terrainColor = texture(this.game.resources.terrainTexture, uv()).rgb
+
+        /**
+         * Color
+         */
+        const grassColorUniform = uniform(color('#e0e239'))
+        const dirtColorUniform = uniform(color('#ffb869'))
+        const waterSurfaceColorUniform = uniform(color('#00ffea'))
+        const waterDepthColorUniform = uniform(color('#1800b2'))
+
+        // Dirt color
+        let baseColor = color(dirtColorUniform)
+
+        // Grass
+        baseColor = mix(baseColor, grassColorUniform, terrainColor.g)
+
+        // Water
+        baseColor = mix(baseColor, waterSurfaceColorUniform, smoothstep(terrainColor.b, 0, 0.1))
+        baseColor = mix(baseColor, waterDepthColorUniform, smoothstep(0.1, 1, terrainColor.b))
+
+        material.outputNode = this.game.materials.lightOutputNode(baseColor.rgb, this.game.materials.getTotalShadow(material))
+        
+        /**
+         * Position
+         */
+        const depthUniform = uniform(1)
+        material.positionNode = positionLocal.sub(vec3(0, terrainColor.b.mul(depthUniform), 0))
 
         this.ground = new THREE.Mesh(geometry, material)
+        this.ground.receiveShadow = true
         this.game.scene.add(this.ground)
+
+        // Debug
+
+        if(this.game.debug.active)
+        {
+            const debugPanel = this.game.debug.panel.addFolder({
+                title: '🪴 Ground',
+                expanded: true,
+            })
+
+            this.game.debug.addThreeColorBinding(debugPanel, grassColorUniform.value, 'grassColor')
+            this.game.debug.addThreeColorBinding(debugPanel, dirtColorUniform.value, 'dirtColorUniform')
+            this.game.debug.addThreeColorBinding(debugPanel, waterSurfaceColorUniform.value, 'waterSurfaceColorUniform')
+            this.game.debug.addThreeColorBinding(debugPanel, waterDepthColorUniform.value, 'waterDepthColorUniform')
+        }
     }
 
     setKeys()
@@ -124,12 +168,12 @@ export class Floor
 
     update()
     {
-        // TODO: Mutualise formula as for grass
-        const offset = new THREE.Vector3(this.game.view.spherical.offset.x, 0, this.game.view.spherical.offset.z).setLength(80 / 2).negate()
-        this.ground.position.set(
-            this.game.view.position.x,
-            0,
-            this.game.view.position.z
-        ).add(offset)
+        // // TODO: Mutualise formula as for grass
+        // const offset = new THREE.Vector3(this.game.view.spherical.offset.x, 0, this.game.view.spherical.offset.z).setLength(80 / 2).negate()
+        // this.ground.position.set(
+        //     this.game.view.position.x,
+        //     0,
+        //     this.game.view.position.z
+        // ).add(offset)
     }
 }

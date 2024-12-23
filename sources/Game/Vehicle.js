@@ -99,7 +99,7 @@ export class Vehicle
                 type: 'dynamic',
                 position: { x: 0, y: 5, z: 0 },
                 friction: 0.4,
-                rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), - Math.PI * 0.4),
+                rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), - Math.PI * 0),
                 // rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 0, 1), - Math.PI * 0.5),
                 colliders: [
                     { shape: 'cuboid', parameters: [ 1.5, 0.4, 0.85 ], position: { x: 0, y: - 0.125, z: 0 } },

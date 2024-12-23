@@ -1,4 +1,5 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import * as THREE from 'three/webgpu'
 
 export class ResourcesLoader
@@ -19,7 +20,14 @@ export class ResourcesLoader
         if(_type === 'texture')
             loader = new THREE.TextureLoader()
         else if(_type === 'gltf')
+        {
+            const dracoLoader = new DRACOLoader()
+            dracoLoader.setDecoderPath('/draco/')
+            dracoLoader.preload()
+            
             loader = new GLTFLoader()
+            loader.setDRACOLoader(dracoLoader)
+        }
 
         this.loaders.set(_type, loader)
 
