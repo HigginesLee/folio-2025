@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { mul, max, step, output, color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform } from 'three/tsl'
+import { mul, max, step, output, color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform, normalLocal, normalWorld } from 'three/tsl'
 import getWind from '../tsl/getWind.js'
 
 export class Grass
@@ -152,7 +152,7 @@ export class Grass
         // // Normal
         // const normal = vec3(wind.y.mul(-10), 1, wind.y.mul(-10)).normalize()
         // this.material.normalNode = transformNormalToView(normal)
-        this.material.normalNode = transformNormalToView(vec3(0, 1, 0))
+        // this.material.normalNode = transformNormalToView(mix(vec3(0, 1, 0), vec3(1, 1, 1), terrainDataGrass).normalize())
 
         // Shadow
         const totalShadows = this.game.materials.getTotalShadow(this.material)
@@ -168,11 +168,11 @@ export class Grass
         // baseColor = mix(baseColor, color('#9eaf33'), tipness).rgb
         //     .varying()
 
-        const normal = mix(vec3(0, 1, 0), vec3(1, 1, 1), terrainDataGrass).normalize()
+        const normal = mix(vec3(0, 1, 0), vec3(1, 1, 1), terrainDataGrass.smoothstep(0.8, 1)).normalize()
         
         const lightenColor = baseColor.mul(this.game.lighting.colorUniform.mul(this.game.lighting.intensityUniform))
 
-        const coreShadowMix = normal.normalize().dot(this.game.lighting.directionUniform).smoothstep(this.game.materials.coreShadowEdgeHigh, this.game.materials.coreShadowEdgeLow)
+        const coreShadowMix = normal.dot(this.game.lighting.directionUniform).smoothstep(this.game.materials.coreShadowEdgeHigh, this.game.materials.coreShadowEdgeLow)
         const castShadowMix = totalShadows.oneMinus()
         const tipnessShadowMix = tipness.oneMinus().mul(terrainDataGrass)
         const combinedShadowMix = max(max(coreShadowMix, castShadowMix), tipnessShadowMix).clamp(0, 1)
