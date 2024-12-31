@@ -1,7 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { mul, max, step, output, color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform, normalLocal, normalWorld } from 'three/tsl'
-import getWind from '../tsl/getWind.js'
 
 export class Grass
 {
@@ -144,7 +143,7 @@ export class Grass
             vertexPosition.xz.assign(rotateUV(vertexPosition.xz, angleToCamera, worldPosition.xz))
 
             // Wind
-            wind.assign(getWind([this.game.noises.texture, worldPosition.xz]).mul(tipness).mul(height).mul(2))
+            wind.assign(this.game.wind.offsetNode([worldPosition.xz]).mul(tipness).mul(height).mul(2))
             vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
 
             return vertexPosition

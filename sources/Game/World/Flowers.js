@@ -1,6 +1,5 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import getWind from '../tsl/getWind.js'
 import { color, float, Fn, instance, instancedBufferAttribute, instanceIndex, luminance, mix, positionLocal, texture, uniform, uniformArray, uv, vec3, vec4 } from 'three/tsl'
 import { remap, smoothstep } from '../utilities/maths.js'
 
@@ -142,7 +141,7 @@ export class Flowers
         this.material.shadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(shadowOffset))
 
         // Position
-        const wind = getWind([this.game.noises.texture, positionLocal.xz])
+        const wind = this.game.wind.offsetNode([positionLocal.xz])
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
         this.material.positionNode = Fn( ( { object } ) =>

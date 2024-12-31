@@ -1,6 +1,5 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import getWind from '../tsl/getWind.js'
 import { color, uniform, normalLocal, mix, output, instance, smoothstep, vec4, PI, vertexIndex, rotateUV, time, sin, uv, texture, float, Fn, positionLocal, vec3, transformNormalToView, normalWorld, positionWorld, frontFacing, If } from 'three/tsl'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { remap } from '../utilities/maths.js'
@@ -83,7 +82,7 @@ export class Foliage
         })
     
         // Position
-        const wind = getWind([this.game.noises.texture, positionLocal.xz])
+        const wind = this.game.wind.offsetNode([positionLocal.xz])
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
         this.material.positionNode = Fn( ( { object } ) =>
