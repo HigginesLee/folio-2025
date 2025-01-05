@@ -1,9 +1,8 @@
 import * as THREE from 'three/webgpu'
 import CameraControls from 'camera-controls'
 import { Game } from './Game.js'
-import { clamp, lerp, remap, smoothstep } from './utilities/maths.js'
-import { mix, vec2, atan2, cos, sin, uniform, PI, vec3, time, modelViewMatrix, cameraProjectionMatrix, viewport, vec4, Fn, positionGeometry, positionLocal, attribute } from 'three/tsl'
-import { degToRad } from 'three/src/math/MathUtils.js'
+import { clamp, lerp, smoothstep } from './utilities/maths.js'
+import { mix, uniform, time, vec4, Fn, positionGeometry, attribute } from 'three/tsl'
 
 CameraControls.install( { THREE: THREE } )
 
@@ -49,7 +48,7 @@ export class View
         this.setFocusPoint()
         this.setZoom()
         this.setSpherical()
-        this.setCamera()
+        this.setCameras()
         this.setOptimalArea()
         this.setFree()
         this.setSpeedLines()
@@ -113,22 +112,22 @@ export class View
 
         this.optimalArea.update = () =>
         {
-            this.camera.updateProjectionMatrix()
-            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, -1), this.camera)
+            this.defaultCamera.updateProjectionMatrix()
+            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, -1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.near)
             this.optimalArea.helpers.near.position.copy(this.optimalArea.near)
 
-            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, 1), this.camera)
+            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, 1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.far)
             this.optimalArea.helpers.far.position.copy(this.optimalArea.far)
 
             const centerA = this.optimalArea.near.clone().lerp(this.optimalArea.far, 0.5)
 
-            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, -1), this.camera)
+            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, -1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.near)
             this.optimalArea.helpers.near.position.copy(this.optimalArea.near)
 
-            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, 1), this.camera)
+            this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, 1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.far)
             this.optimalArea.helpers.far.position.copy(this.optimalArea.far)
 
@@ -201,16 +200,20 @@ export class View
         }
     }
 
-    setCamera()
+    setCameras()
     {
         this.camera = new THREE.PerspectiveCamera(25, this.game.viewport.ratio, 0.1, 1000)
         this.camera.position.setFromSphericalCoords(this.spherical.radius.current, this.spherical.phi, this.spherical.theta)
-        this.game.scene.add(this.camera)
+
+        this.defaultCamera = this.camera.clone()
+        this.freeCamera = this.camera.clone()
+
+        this.game.scene.add(this.camera, this.defaultCamera, this.freeCamera)
     }
 
     setFree()
     {
-        this.freeMode = new CameraControls(this.camera, this.game.domElement)
+        this.freeMode = new CameraControls(this.freeCamera, this.game.domElement)
         this.freeMode.enabled = this.mode === View.FREE_MODE
         this.freeMode.smoothTime = 0.075
         this.freeMode.draggingSmoothTime = 0.075
@@ -324,6 +327,12 @@ export class View
     {
         this.camera.aspect = this.game.viewport.width / this.game.viewport.height
         this.camera.updateProjectionMatrix()
+
+        this.defaultCamera.aspect = this.game.viewport.width / this.game.viewport.height
+        this.defaultCamera.updateProjectionMatrix()
+
+        this.freeCamera.aspect = this.game.viewport.width / this.game.viewport.height
+        this.freeCamera.updateProjectionMatrix()
     }
 
     update()
@@ -377,21 +386,22 @@ export class View
         // Position
         this.position.copy(this.focusPoint.smoothedPosition).add(this.spherical.offset)
 
-        // Default mode
+        // Default camera
+        this.defaultCamera.position.copy(this.position)
+        this.defaultCamera.lookAt(this.focusPoint.smoothedPosition)
+
         if(this.mode === View.DEFAULT_MODE)
         {
-            this.camera.position.copy(this.position)
-
-            // Look at
-            this.camera.lookAt(this.focusPoint.smoothedPosition)
+            this.camera.position.copy(this.defaultCamera.position)
+            this.camera.quaternion.copy(this.defaultCamera.quaternion)
         }
-        
-        // Free mode
         else if(this.mode === View.FREE_MODE)
         {
             this.freeMode.update(this.game.time.delta)
+            this.camera.position.copy(this.freeCamera.position)
+            this.camera.quaternion.copy(this.freeCamera.quaternion)
         }
-
+        
         // Optimal area
         this.optimalArea.update()
 
