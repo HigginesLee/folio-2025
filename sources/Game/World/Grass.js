@@ -95,7 +95,7 @@ export class Grass
                 0,
         ])
 
-        const terrainUv = this.game.materials.terrainUvNode(bladePosition)
+        const terrainUv = this.game.materials.worldToTerrainUv(bladePosition)
         const terrainData = this.game.materials.terrainDataNode(terrainUv)
         const terrainDataGrass = terrainData.g.smoothstep(0.4, 0.6)
 

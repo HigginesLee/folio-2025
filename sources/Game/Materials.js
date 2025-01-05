@@ -162,7 +162,7 @@ export class Materials
 
                 if(withBounce)
                 {
-                    const terrainUv = this.game.materials.terrainUvNode(positionWorld.xz)
+                    const terrainUv = this.game.materials.worldToTerrainUv(positionWorld.xz)
                     const terrainData = this.terrainDataNode(terrainUv)
 
                     // Bounce color
@@ -216,7 +216,7 @@ export class Materials
         this.waterSurfaceColorUniform = uniform(color('#5dc278'))
         this.waterDepthColorUniform = uniform(color('#1b3e52'))
 
-        this.terrainUvNode = Fn(([coordinate]) =>
+        this.worldToTerrainUv = Fn(([coordinate]) =>
         {
             const terrainUv = coordinate.div(256).add(0.5).toVar()
             return terrainUv

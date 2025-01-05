@@ -28,7 +28,7 @@ export class WaterSurface
 
         this.material.outputNode = Fn(() =>
         {
-            const terrainUv = this.game.materials.terrainUvNode(positionWorld.xz)
+            const terrainUv = this.game.materials.worldToTerrainUv(positionWorld.xz)
             const terrainData = this.game.materials.terrainDataNode(terrainUv)
             
             const baseRipple = terrainData.b.add(this.localTime).mul(slopeFrequency).toVar()
