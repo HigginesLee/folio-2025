@@ -10,7 +10,7 @@ export class Leaves
     {
         this.game = Game.getInstance()
 
-        this.count = 1024 * 2 * 2 * 2
+        this.count = Math.pow(2, 16)
 
         // Debug
         if(this.game.debug.active)
@@ -49,9 +49,24 @@ export class Leaves
     {
         this.material = new THREE.MeshLambertNodeMaterial({ side: THREE.DoubleSide })
 
+        // Uniforms
+        this.focusPoint = uniform(vec2())
+        this.vehicleVelocity = uniform(vec3())
+        this.vehiclePosition = uniform(vec3())
+        this.scale = uniform(0.25)
+        this.rotationFrequency = uniform(3)
+        this.rotationElevationMultiplier = uniform(1)
+        this.pushOutMultiplier = uniform(0.1)
+        this.pushMultiplier = uniform(0.5)
+        this.windFrequency = uniform(0.005)
+        this.windMultiplier = uniform(0.002)
+        this.upwardMultiplier = uniform(0.2)
+        this.defaultDamping = uniform(0.02)
+        this.waterDamping = uniform(0.005)
+        this.gravity = uniform(0.01)
+
         // Buffers
         this.positionBuffer = instancedArray(this.count, 'vec3')
-        this.velocityBuffer = instancedArray(this.count, 'vec3')
         this.velocityBuffer = instancedArray(this.count, 'vec3')
 
         // Base rotation buffer
@@ -97,22 +112,6 @@ export class Leaves
         // Output color
         this.material.outputNode = this.game.lighting.lightOutputNodeBuilder(colorBuffer, this.game.lighting.addTotalShadowToMaterial(this.material))
 
-        // Uniforms
-        this.center = uniform(vec2())
-        this.vehicleVelocity = uniform(vec3())
-        this.vehiclePosition = uniform(vec3())
-        this.scale = uniform(0.25)
-        this.rotationFrequency = uniform(3)
-        this.rotationElevationMultiplier = uniform(1)
-        this.pushOutMultiplier = uniform(0.1)
-        this.pushMultiplier = uniform(0.5)
-        this.windFrequency = uniform(0.005)
-        this.windMultiplier = uniform(0.002)
-        this.upwardMultiplier = uniform(0.2)
-        this.defaultDamping = uniform(0.02)
-        this.waterDamping = uniform(0.005)
-        this.gravity = uniform(0.01)
-
         // Position
         this.material.positionNode = Fn(() =>
         {
@@ -153,7 +152,7 @@ export class Leaves
 
             const noiseUv = position.xz.mul(0.02)
             const noise = texture(this.game.noises.texture, noiseUv).r
-            position.xz.addAssign(noise.mul(15))
+            position.x.addAssign(noise.mul(15))
         })()
         const initCompute = init.compute(this.count)
 
@@ -208,13 +207,13 @@ export class Leaves
             position.addAssign(velocity)
 
             // Clamp to floor / water
-            const floorY = terrainData.b.remapClamp(0.02, 0.13, 0, -0.3).add(0.03)
+            const floorY = terrainData.b.remapClamp(0.02, 0.13, 0, -0.3).add(0.02).add(weight.mul(0.02))
             position.y.assign(max(position.y, floorY))
 
             // Loop
             const halfSize = this.size.mul(0.5).toVar()
-            position.x.assign(mod(position.x.add(halfSize).sub(this.center.x), this.size).sub(halfSize).add(this.center.x))
-            position.z.assign(mod(position.z.add(halfSize).sub(this.center.y), this.size).sub(halfSize).add(this.center.y))
+            position.x.assign(mod(position.x.add(halfSize).sub(this.focusPoint.x), this.size).sub(halfSize).add(this.focusPoint.x))
+            position.z.assign(mod(position.z.add(halfSize).sub(this.focusPoint.y), this.size).sub(halfSize).add(this.focusPoint.y))
         })()
         this.updateCompute = update.compute(this.count)
 
@@ -247,7 +246,7 @@ export class Leaves
 
     update()
     {
-        this.center.value.set(this.game.view.optimalArea.position.x, this.game.view.optimalArea.position.z)
+        this.focusPoint.value.set(this.game.view.optimalArea.position.x, this.game.view.optimalArea.position.z)
 
         this.vehicleVelocity.value.copy(this.game.vehicle.velocity)
         this.vehiclePosition.value.copy(this.game.vehicle.position)
