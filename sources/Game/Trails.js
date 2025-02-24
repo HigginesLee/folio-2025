@@ -137,9 +137,9 @@ export class Trails
         )
 
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true, depthWrite: false })
-        const customNormal = vec3().varying()
-        const ratio = float(0).varying()
-        const alpha = float(0).varying()
+        const customNormal = vec3().toVarying()
+        const ratio = float(0).toVarying()
+        const alpha = float(0).toVarying()
 
         material.positionNode = Fn(() =>
         {
