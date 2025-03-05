@@ -42,7 +42,7 @@ html, body, .game, .modals
 .fonts-loader
 {
     position: fixed;
-    top: 100%;
+    top: calc(100% + 1px);
     left: 0;
 }
 

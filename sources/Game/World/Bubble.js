@@ -85,17 +85,17 @@ export class Bubble
 
     tryShow(text = '', position = null)
     {
-        // Same and already visible
-        if(
-            this.visible &&
-            text === this.text &&
-            (position !== null || position.equals(this.position))
-        )
-        {
-            return
-        }
+        // // Same and already visible
+        // if(
+        //     this.visible &&
+        //     text === this.text &&
+        //     (position !== null || position.equals(this.position))
+        // )
+        // {
+        //     return
+        // }
 
-        // Is hidden => update directly
+        // Is hidden => update directly and show
         if(!this.visible)
         {
             this.updateText(text)
@@ -141,6 +141,7 @@ export class Bubble
     {
         this.visible = true
         this.mesh.visible = true
+
         gsap.to(
             this.mesh.scale,
             {

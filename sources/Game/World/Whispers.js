@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { billboarding, cameraPosition, color, Fn, instanceIndex, min, mix, modelViewMatrix, mul, normalWorld, positionGeometry, positionViewDirection, positionWorld, smoothstep, texture, time, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { billboarding, cameraPosition, color, Fn, instanceIndex, min, mix, modelViewMatrix, mul, normalWorld, positionGeometry, positionViewDirection, positionWorld, smoothstep, storage, texture, time, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { hash } from 'three/tsl'
 import gsap from 'gsap'
 import { Bubble } from './Bubble.js'
@@ -15,11 +15,8 @@ export class Whispers
 
         this.setMesh()
         this.setData()
-        // this.setInput()
         this.setBubble()
         this.setModal()
-        // this.connectServer()
-        // this.connectSupabase()
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -35,6 +32,13 @@ export class Whispers
 
     setMesh()
     {
+        // Reveal buffer
+        this.revealArray = new Float32Array(this.count)
+        this.revealBuffer = new THREE.StorageInstancedBufferAttribute(this.revealArray, 1)
+        this.revealBufferNeedsUpdate = true
+        
+        const revealAttribute = storage(this.revealBuffer, 'float', this.count).toAttribute()
+
         // Geometry
         const beamGeometry = new THREE.PlaneGeometry(1.25, 1.25 * 2, 1, 16)
         beamGeometry.rotateY(Math.PI * 0.25)
@@ -56,12 +60,12 @@ export class Whispers
 
         beamMaterial.outputNode = Fn(() =>
         {
-            const mask = texture(this.game.resources.whisperBeamTexture, uv()).r
+            const mask = texture(this.game.resources.whisperBeamTexture, uv()).r.sub(revealAttribute.oneMinus())
             const color = texture(this.game.materials.gradientTexture, vec2(0, mask))
             const alpha = smoothstep(0.05, 0.3, mask)
             const emissiveMultiplier = smoothstep(0.8, 1, mask).add(1).mul(2)
 
-            return vec4(vec3(color.mul(emissiveMultiplier)), alpha)
+            return vec4(vec3(color.mul(emissiveMultiplier)), alpha.mul(revealAttribute))
         })()
 
         // // Sphere
@@ -88,7 +92,7 @@ export class Whispers
         // Instanced mesh
         this.mesh = new THREE.InstancedMesh(beamGeometry, beamMaterial, this.count)
         this.mesh.frustumCulled = false
-        this.mesh.visible = false
+        this.mesh.visible = true
         this.game.scene.add(this.mesh)
     }
 
@@ -96,38 +100,121 @@ export class Whispers
     {
         this.data = {}
         this.data.needsUpdate = false
-        this.data.items = new Map()
+        this.data.items = []
+
+        for(let i = 0; i < this.count; i++)
+        {
+            this.data.items.push({
+                index: i,
+                matrix: new THREE.Matrix4(),
+                available: true,
+                needsUpdate: false
+            })
+        }
+
+        this.data.findById = (id) =>
+        {
+            return this.data.items.find(_item => _item.id === id)
+        }
+
+        this.data.findAvailable = () =>
+        {
+            const item = this.data.items.find(_item => _item.available)
+
+            if(item)
+            {
+                item.available = false
+                return item
+            }
+            else
+            {
+                console.warn('can\'t find available item')
+            }
+        }
 
         this.data.upsert = (input) =>
         {
-            let item = this.data.items.get(input.id)
+            let item = this.data.findById(input.id)
 
             // Update
             if(item)
             {
-                item.message = input.message
-                item.position.set(input.x, input.y, input.z)
+                const dummy = { value: 1 }
+                gsap.to(
+                    dummy,
+                    {
+                        value: 0,
+                        onUpdate: () =>
+                        {
+                            this.revealArray[item.index] = dummy.value
+                            this.revealBufferNeedsUpdate = true
+                        },
+                        onComplete: () =>
+                        {
+                            item.message = input.message
+                            item.position.set(input.x, input.y, input.z)
+                            item.matrix.setPosition(item.position)
+                            item.needsUpdate = true
+                            
+                            // If is closest => Reset closest (to have it update naturally)
+                            if(item === this.bubble.closest)
+                                this.bubble.closest = null
+
+                            gsap.to(
+                                dummy,
+                                {
+                                    value: 1,
+                                    onUpdate: () =>
+                                    {
+                                        this.revealArray[item.index] = dummy.value
+                                        this.revealBufferNeedsUpdate = true
+                                    }
+                                }
+                            )
+                        }
+                    }
+                )
+
             }
 
             // Insert
             else
             {
-                item = {
-                    message: input.message,
-                    position: new THREE.Vector3(input.x, input.y, input.z)
+                item = this.data.findAvailable()
+
+                const dummy = { value: 0 }
+                gsap.to(
+                    dummy,
+                    {
+                        value: 1,
+                        onUpdate: () =>
+                        {
+                            this.revealArray[item.index] = dummy.value
+                            this.revealBufferNeedsUpdate = true
+                        }
+                    }
+                )
+
+                if(item)
+                {
+                    item.id = input.id
+                    item.available = false
+                    item.message = input.message,
+                    item.position = new THREE.Vector3(input.x, input.y, input.z)
+                    item.matrix.setPosition(item.position)
+                    item.needsUpdate = true
                 }
-
-                this.data.items.set(input.id, item)
             }
-
-            this.data.needsUpdate = true
         }
 
         this.data.delete = (input) =>
         {
-            this.data.items.delete(input.id)
+            let item = this.data.findById(input.id)
 
-            this.data.needsUpdate = true
+            if(item)
+            {
+                item.available = true
+            }
         }
 
         // Server message event
@@ -138,8 +225,6 @@ export class Whispers
             {
                 for(const whisper of data.whispers)
                     this.data.upsert(whisper)
-                    
-                this.needsUpdate = true
             }
 
             // Delete
@@ -149,7 +234,6 @@ export class Whispers
                 {
                     this.data.delete(whisper)
                 }
-                this.needsUpdate = true
             }
         })
 
@@ -158,38 +242,9 @@ export class Whispers
         {
             for(const whisper of this.game.server.initData.whispers)
                 this.data.upsert(whisper)
-                
-            this.needsUpdate = true
         }
     }
 
-    // setInput()
-    // {
-    //     // Input
-    //     const input = document.createElement('input')
-    //     input.style.position = 'fixed'
-    //     input.style.bottom = 0
-    //     input.style.left = 0
-    //     input.style.zIndex = 1
-    //     document.body.append(input)
-
-    //     input.addEventListener('keydown', async (event) =>
-    //     {
-    //         if(event.key === 'Enter' && input.value !== '')
-    //         {
-    //             // Insert
-    //             this.game.server.send({
-    //                 type: 'whispersInsert',
-    //                 message: input.value,
-    //                 x: this.game.vehicle.position.x,
-    //                 y: this.game.vehicle.position.y,
-    //                 z: this.game.vehicle.position.z
-    //             })
-    //             // input.value = ''
-    //         }
-    //     })
-    // }
-    
     setBubble()
     {
         this.bubble = {}
@@ -234,7 +289,7 @@ export class Whispers
         this.modal.previewMessageElement.addEventListener('blur', () =>
         {
             const sanatized = this.modal.inputElement.value.trim().substring(0, this.count)
-            this.modal.previewMessageElement.textContent = sanatized
+            this.modal.previewMessageElement.textContent = sanatized !== '' ? sanatized : 'Your message here'
             updateGroup()
         })
 
@@ -264,43 +319,37 @@ export class Whispers
     update()
     {
         // Data
-        if(this.data.needsUpdate)
+        let instanceMatrixNeedsUpdate = false
+
+        for(const item of this.data.items)
         {
-            let i = 0
-            const matrix = new THREE.Matrix4()
-            this.data.items.forEach((item) =>
+            if(item.needsUpdate)
             {
-                matrix.setPosition(item.position)
-                this.mesh.setMatrixAt(i, matrix)
-
-                i++
-            })
-
-            for(; i < this.count; i++)
-            {
-                matrix.setPosition(0, -2, 0)
-                this.mesh.setMatrixAt(i, matrix)
+                instanceMatrixNeedsUpdate = true
+                this.mesh.setMatrixAt(item.index, item.matrix)
+                item.needsUpdate = false
             }
-
-            this.mesh.instanceMatrix.needsUpdate = true
-
-            this.mesh.visible = true
-            this.data.needsUpdate = false
         }
+
+        if(instanceMatrixNeedsUpdate)
+            this.mesh.instanceMatrix.needsUpdate = true
 
         // Bubble
         let closestWhisper = null
         let closestDistance = Infinity
-        this.data.items.forEach(whisper =>
+        for(const item of this.data.items)
         {
-            const distance = this.game.vehicle.position.distanceTo(whisper.position)
-
-            if(distance < closestDistance && distance < this.bubble.minDistance)
+            if(!item.available)
             {
-                closestDistance = distance
-                closestWhisper = whisper
+                const distance = this.game.vehicle.position.distanceTo(item.position)
+
+                if(distance < closestDistance && distance < this.bubble.minDistance)
+                {
+                    closestDistance = distance
+                    closestWhisper = item
+                }
             }
-        })
+        }
 
         if(closestWhisper !== this.bubble.closest)
         {
@@ -314,6 +363,12 @@ export class Whispers
             }
 
             this.bubble.closest = closestWhisper
+        }
+
+        if(this.revealBufferNeedsUpdate)
+        {
+            this.revealBuffer.needsUpdate = true
+            this.revealBufferNeedsUpdate = false
         }
     }
 }
