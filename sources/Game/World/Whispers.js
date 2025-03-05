@@ -13,7 +13,7 @@ export class Whispers
 
         this.count = 30
 
-        this.setMesh()
+        this.setFlames()
         this.setData()
         this.setBubble()
         this.setModal()
@@ -30,7 +30,7 @@ export class Whispers
         })
     }
 
-    setMesh()
+    setFlames()
     {
         // Reveal buffer
         this.revealArray = new Float32Array(this.count)
@@ -90,10 +90,10 @@ export class Whispers
         // group.add(sphere)
 
         // Instanced mesh
-        this.mesh = new THREE.InstancedMesh(beamGeometry, beamMaterial, this.count)
-        this.mesh.frustumCulled = false
-        this.mesh.visible = true
-        this.game.scene.add(this.mesh)
+        this.flames = new THREE.InstancedMesh(beamGeometry, beamMaterial, this.count)
+        this.flames.frustumCulled = false
+        this.flames.visible = true
+        this.game.scene.add(this.flames)
     }
 
     setData()
@@ -155,7 +155,7 @@ export class Whispers
                             item.position.set(input.x, input.y, input.z)
                             item.matrix.setPosition(item.position)
                             item.needsUpdate = true
-                            
+
                             // If is closest => Reset closest (to have it update naturally)
                             if(item === this.bubble.closest)
                                 this.bubble.closest = null
@@ -306,13 +306,15 @@ export class Whispers
                 z: this.game.vehicle.position.z
             })
 
-            // Reset input and preview
-            this.modal.inputElement.value = ''
-            this.modal.previewMessageElement.textContent = 'Your message here'
-            updateGroup()
-
             // Close modal
             this.game.modals.close()
+        })
+
+        modalItem.events.on('closed', () =>
+        {
+            this.modal.previewMessageElement.textContent = 'Your message here'
+            this.modal.inputElement.value = ''
+            updateGroup()
         })
     }
 
@@ -326,13 +328,13 @@ export class Whispers
             if(item.needsUpdate)
             {
                 instanceMatrixNeedsUpdate = true
-                this.mesh.setMatrixAt(item.index, item.matrix)
+                this.flames.setMatrixAt(item.index, item.matrix)
                 item.needsUpdate = false
             }
         }
 
         if(instanceMatrixNeedsUpdate)
-            this.mesh.instanceMatrix.needsUpdate = true
+            this.flames.instanceMatrix.needsUpdate = true
 
         // Bubble
         let closestWhisper = null

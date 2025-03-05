@@ -1,3 +1,4 @@
+import { Events } from './Events.js'
 import { Game } from './Game.js'
 
 export class Modals
@@ -23,6 +24,7 @@ export class Modals
     {
         if(!this.visible)
         {
+            this.current.events.trigger('closed')
             this.current.element.classList.remove('is-displayed')
             this.current = null
             
@@ -39,6 +41,10 @@ export class Modals
                 this.element.classList.remove('is-displayed')
             }
         }
+        else
+        {
+            this.current.events.trigger('opened')
+        }
     }
 
     setItems()
@@ -50,7 +56,11 @@ export class Modals
         for(const element of elements)
         {
             const name = element.dataset.name
-            const item = { element: element, mainFocus: element.querySelector('.js-main-focus') }
+            const item = {
+                element: element,
+                mainFocus: element.querySelector('.js-main-focus'),
+                events: new Events()
+            }
             this.items.set(name, item)
         }
     }
@@ -109,6 +119,8 @@ export class Modals
             this.visible = true
             this.current = item
             this.game.inputs.updateFilters(['ui'])
+
+            item.events.trigger('open')
         }
 
         // Already visible => Set pending
@@ -128,5 +140,6 @@ export class Modals
 
         this.visible = false
         this.game.inputs.updateFilters([])
+        this.current.events.trigger('close')
     }
 }
