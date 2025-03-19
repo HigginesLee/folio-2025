@@ -4,6 +4,7 @@ import { billboarding, cameraPosition, color, Fn, instanceIndex, min, mix, model
 import { hash } from 'three/tsl'
 import gsap from 'gsap'
 import { Bubble } from './Bubble.js'
+import emojiRegex from 'emoji-regex'
 
 export class Whispers
 {
@@ -263,9 +264,24 @@ export class Whispers
         this.modal.inputElement = this.modal.inputGroupElement.querySelector('.js-input')
         this.modal.previewMessageElement = this.modal.element.querySelector('.js-preview-message')
 
+        const sanatize = (text = '', trim = false, limit = false, stripEmojis = false) =>
+        {
+            let sanatized = text
+            if(trim)
+                sanatized = sanatized.trim()
+
+            if(stripEmojis)
+                sanatized = sanatized.replace(emojiRegex(), '')
+            
+            if(limit)
+                sanatized = sanatized.substring(0, this.count)
+
+            return sanatized
+        }
+
         const submit = () =>
         {
-            const sanatized = this.modal.inputElement.value.trim().substring(0, this.count)
+            const sanatized = sanatize(this.modal.inputElement.value, true, true, true)
             
             if(sanatized.length)
             {
@@ -288,19 +304,20 @@ export class Whispers
             if(this.modal.inputElement.value.length)
                 this.modal.inputGroupElement.classList.add('is-valide')
             else
-            this.modal.inputGroupElement.classList.remove('is-valide')
+                this.modal.inputGroupElement.classList.remove('is-valide')
         }
 
         this.modal.inputElement.addEventListener('input', () =>
         {
-            const sanatized = this.modal.inputElement.value.trim().substring(0, this.count)
+            const sanatized = sanatize(this.modal.inputElement.value, false, true, true)
             this.modal.previewMessageElement.textContent = sanatized.length ? sanatized : 'Your message here'
+            this.modal.inputElement.value = sanatized
             updateGroup()
         })
 
         this.modal.previewMessageElement.addEventListener('input', (event) =>
         {
-            const sanatized = this.modal.previewMessageElement.textContent.substring(0, this.count)
+            const sanatized = sanatize(this.modal.previewMessageElement.textContent, false, true, true)
             this.modal.previewMessageElement.textContent = sanatized
             this.modal.inputElement.value = sanatized
             updateGroup()
@@ -308,7 +325,7 @@ export class Whispers
 
         this.modal.previewMessageElement.addEventListener('blur', () =>
         {
-            const sanatized = this.modal.inputElement.value.trim().substring(0, this.count)
+            const sanatized = sanatize(this.modal.inputElement.value, true, true, true)
             this.modal.previewMessageElement.textContent = sanatized !== '' ? sanatized : 'Your message here'
             updateGroup()
         })
