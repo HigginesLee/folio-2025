@@ -60,6 +60,11 @@ export class Entities
                 collider.shape = 'trimesh'
                 collider.parameters = [ physical.geometry.attributes.position.array, physical.geometry.index.array ]
             }
+            else if(physical.name.match(/^hull/i))
+            {
+                collider.shape = 'hull'
+                collider.parameters = [ physical.geometry.attributes.position.array, physical.geometry.index.array ]
+            }
             else if(physical.name.match(/^cub/i))
             {
                 collider.shape = 'cuboid'

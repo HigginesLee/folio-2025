@@ -111,6 +111,8 @@ export class Physics
                 colliderDescription = colliderDescription.cylinder(..._colliderDescription.parameters)
             else if(_colliderDescription.shape === 'trimesh')
                 colliderDescription = colliderDescription.trimesh(..._colliderDescription.parameters)
+            else if(_colliderDescription.shape === 'hull')
+                colliderDescription = colliderDescription.convexHull(..._colliderDescription.parameters)
             else if(_colliderDescription.shape === 'heightfield')
                 colliderDescription = colliderDescription.heightfield(..._colliderDescription.parameters)
 

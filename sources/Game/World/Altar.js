@@ -35,7 +35,7 @@ export class Altar
         const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, 32, 1, true)
         cylinderGeometry.translate(0, height * 0.5, 0)
         
-        const cylinderMaterial = new THREE.MeshBasicNodeMaterial({ side: THREE.DoubleSide, transparent: true })
+        const cylinderMaterial = new THREE.MeshBasicNodeMaterial({ side: THREE.DoubleSide })
 
         cylinderMaterial.outputNode = Fn(() =>
         {
@@ -67,10 +67,27 @@ export class Altar
         this.game.scene.add(cylinder)
 
         // Bottom
-        const bottomGeometry = new THREE.CircleGeometry(radius, 32)
+        const bottomGeometry = new THREE.PlaneGeometry(radius * 2, radius * 2, 1, 1)
+
+        const satanStarTexture = this.game.resources.satanStarTexture
+        satanStarTexture.minFilter = THREE.NearestFilter
+        satanStarTexture.magFilter = THREE.NearestFilter
+        satanStarTexture.generateMipmaps = false
         
         const bottomMaterial = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        bottomMaterial.outputNode = vec4(this.game.fog.strength.mix(vec3(0), this.game.fog.color), 1)
+        bottomMaterial.outputNode = Fn(() =>
+        {
+            const newUv = uv().sub(0.5).mul(1.7).add(0.5)
+            const satanStar = texture(satanStarTexture, newUv).r
+
+            const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
+
+            const emissiveColor = colorBottom.mul(emissiveBottom)
+            
+            const finalColor = mix(gooColor, emissiveColor, satanStar)
+
+            return vec4(finalColor, 1)
+        })()
 
         const bottom = new THREE.Mesh(bottomGeometry, bottomMaterial)
         bottom.position.copy(this.position)
