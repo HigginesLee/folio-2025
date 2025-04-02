@@ -324,6 +324,7 @@ export class Altar
                 this.animateBeam()
                 this.animateBeamParticles()
                 this.data.insert()
+                this.updateValue(this.value + 1)
                 this.game.player.die()
             }
         })
@@ -347,6 +348,7 @@ export class Altar
             if(data.type === 'init' || data.type === 'cataclysmUpdate')
             {
                 this.updateValue(data.cataclysmCount)
+                this.updateSkullEyes(data.cataclysmProgress)
             }
         })
 
@@ -354,23 +356,23 @@ export class Altar
         if(this.game.server.initData)
         {
             this.updateValue(this.game.server.initData.cataclysmCount)
+            this.updateSkullEyes(this.game.server.initData.cataclysmProgress)
         }
     }
 
     setSkullEyes()
     {
         for(const skullEyes of this.skullEyes)
-        {
             skullEyes.visible = false
-        }
     }
 
-    updateSkullEyes(value)
+    updateSkullEyes(progress)
     {
+        const count = Math.min(Math.floor(progress * 6), 5)
         let i = 0
         for(const skullEyes of this.skullEyes)
         {
-            skullEyes.visible = i < value
+            skullEyes.visible = i < count
 
             i++
         }

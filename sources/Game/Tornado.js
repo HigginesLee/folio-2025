@@ -10,6 +10,7 @@ export class Tornado
     {
         this.game = Game.getInstance()
 
+        this.running = false
         this.strength = 0
         this.resolution = 20
         this.position = new THREE.Vector3()
@@ -25,6 +26,7 @@ export class Tornado
 
         this.setPath()
         // this.setPreviews()
+        this.setData()
 
         // Update
         this.game.ticker.events.on('tick', () =>
@@ -100,8 +102,38 @@ export class Tornado
         this.game.scene.add(this.previews.line)
     }
 
+    setData()
+    {
+        this.data = {}
+        
+        // Server message event
+        this.game.server.events.on('message', (data) =>
+        {
+            // Init and insert
+            if(data.type === 'init' || data.type === 'cataclysmUpdate')
+            {
+                if(data.cataclysmRunning)
+                    this.start()
+                else
+                    this.stop()
+            }
+        })
+
+        // Init message already received
+        if(this.game.server.initData)
+        {
+            if(this.game.server.initData.cataclysmRunning)
+                this.start()
+            else
+                this.stop()
+        }
+    }
+
     start()
     {
+        if(this.running)
+            return
+
         // Move to position to prevent easing
         const progress = this.game.dayCycles.absoluteProgress * 2
         this.position.copy(this.getPosition(progress))
@@ -133,18 +165,27 @@ export class Tornado
             },
             20
         )
+
+        // Save
+        this.running = true
     }
 
     stop()
     {
+        if(!this.running)
+            return
+
         // Strength
         gsap.to(this, { strength: 0, duration: 20, ease: 'linear', overwrite: true })
 
         // Weather
         this.game.weather.override.end(20)
 
-        // Weather
+        // Day cycles
         this.game.dayCycles.override.end(20)
+
+        // Save
+        this.running = false
     }
 
     getPosition(progress)
