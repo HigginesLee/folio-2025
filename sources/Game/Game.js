@@ -32,6 +32,7 @@ import { PhysicsWireframe } from './Physics/PhysicsWireframe.js'
 import { Areas } from './Areas.js'
 import { Overlay } from './Overlay.js'
 import { Tornado } from './Tornado.js'
+import { InteractiveAreas } from './InteractiveAreas.js'
 
 export class Game
 {
@@ -134,7 +135,7 @@ export class Game
             { name: 'suspensionsBackRight',  category: 'vehicle', keys: [ 'Numpad3' ] },
             { name: 'suspensionsBackLeft',   category: 'vehicle', keys: [ 'Numpad1' ] },
             { name: 'whisper',               category: 'vehicle', keys: [ 'KeyT' ] },
-            { name: 'cookie',                category: 'vehicle', keys: [ 'KeyC' ] },
+            { name: 'interact',              category: 'vehicle', keys: [ 'Enter' ] },
 
             // UI
             { name: 'close',                category: 'ui', keys: [ 'Escape' ] },
@@ -169,6 +170,7 @@ export class Game
             this.physicalVehicle = new PhysicsVehicle()
             this.areas = new Areas()
             this.player = new Player()
+            this.interactiveAreas = new InteractiveAreas()
             this.world = new World()
             this.overlay = new Overlay()
             // this.monitoring = new Monitoring()

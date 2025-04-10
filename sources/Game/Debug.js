@@ -90,6 +90,5 @@ export class Debug
             {
                 buttons[event.cell.title](event.cell.title)
             })
-            
     }
 }

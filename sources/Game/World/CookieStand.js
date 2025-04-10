@@ -6,7 +6,7 @@ import gsap from 'gsap'
 
 export class CookieStand
 {
-    constructor(cookie, banner, ovenHeat, blower, chimneyPosition, spawnerPosition)
+    constructor(cookie, banner, ovenHeat, blower, chimneyPosition, spawnerPosition, interactiveAreaPosition, tablePosition)
     {
         this.game = Game.getInstance()
 
@@ -24,21 +24,19 @@ export class CookieStand
         this.blower = blower
         this.chimneyPosition = chimneyPosition
         this.spawnerPosition = spawnerPosition
+        this.interactiveAreaPosition = interactiveAreaPosition
+        this.tablePosition = tablePosition
 
         this.setBanner()
         this.setParticles()
         this.setOvenHeat()
         this.setCookies()
         this.setActualCookies()
+        this.setInteractiveArea()
 
         this.game.ticker.events.on('tick', () =>
         {
             this.update()
-        })
-
-        this.game.inputs.events.on('cookie', () =>
-        {
-            this.accept()
         })
     }
 
@@ -151,19 +149,31 @@ export class CookieStand
         })
 
         this.cookies = {}
-        this.cookies.count = 100
+        this.cookies.count = 20
+        this.cookies.realCount = this.cookies.count + 2
         this.cookies.currentIndex = 0
         this.cookies.mass = 0.02
         this.cookies.entities = []
 
         const references = []
 
-        for(let i = 0; i < this.cookies.count; i++)
+        for(let i = 0; i < this.cookies.realCount; i++)
         {
+            const onTable = i >= this.cookies.count
+
             // Reference
             const reference = new THREE.Object3D()
-            reference.position.copy(this.spawnerPosition)
-            reference.position.y -= 4
+
+            if(onTable)
+            {
+                reference.position.copy(this.tablePosition)
+                reference.position.y += (i - this.cookies.count) * 0.25
+            }
+            else
+            {
+                reference.position.copy(this.spawnerPosition)
+                reference.position.y -= 4
+            }
             references.push(reference)
             
             // Entity
@@ -181,7 +191,7 @@ export class CookieStand
                     rotation: reference.quaternion,
                     friction: 0.7,
                     sleeping: true,
-                    enabled: false,
+                    enabled: onTable,
                     colliders: [ { shape: 'cylinder', parameters: [ 0.35 / 2, 1.25 / 2 ], mass: this.cookies.mass, category: 'object' } ],
                     waterGravityMultiplier: - 1
                 },
@@ -206,6 +216,17 @@ export class CookieStand
             if(match)
                 this.actualCookies.count = parseInt(match[1])
         }
+    }
+
+    setInteractiveArea()
+    {
+        this.game.interactiveAreas.create(
+            this.interactiveAreaPosition,
+            () =>
+            {
+                this.accept()
+            }
+        )
     }
 
     accept()

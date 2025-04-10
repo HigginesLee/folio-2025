@@ -35,13 +35,29 @@ export class Scenery
         this.bricks = new Bricks()
 
         if(this.references.altar && this.references.altarCounter && this.references.altarSkullEyes)
-            this.altar = new Altar(this.references.altar[0].position, this.references.altarCounter[0], this.references.altarSkullEyes)
+            this.altar = new Altar(
+                this.references.altar[0].position,
+                this.references.altarCounter[0],
+                this.references.altarSkullEyes
+            )
 
         if(this.references.poleLightGlass && this.references.poleLights)
-            this.poleLights = new PoleLights(this.references.poleLightGlass[0], this.references.poleLights)
+            this.poleLights = new PoleLights(
+                this.references.poleLightGlass[0],
+                this.references.poleLights
+            )
             
-        if(this.references.cookie && this.references.cookieBanner && this.references.cookieOvenHeat && this.references.cookieBlower && this.references.cookieChimney && this.references.cookieSpawner)
-            this.cookieStand = new CookieStand(this.references.cookie[0], this.references.cookieBanner[0], this.references.cookieOvenHeat[0], this.references.cookieBlower[0], this.references.cookieChimney[0].position, this.references.cookieSpawner[0].position)
+        if(this.references.cookie && this.references.cookieBanner && this.references.cookieOvenHeat && this.references.cookieBlower && this.references.cookieChimney && this.references.cookieSpawner && this.references.cookieInteractiveArea && this.references.cookieTable)
+            this.cookieStand = new CookieStand(
+                this.references.cookie[0],
+                this.references.cookieBanner[0],
+                this.references.cookieOvenHeat[0],
+                this.references.cookieBlower[0],
+                this.references.cookieChimney[0].position,
+                this.references.cookieSpawner[0].position,
+                this.references.cookieInteractiveArea[0].position,
+                this.references.cookieTable[0].position
+            )
             
         // this.playground = new Playground()
         // this.christmas = new Christmas()
