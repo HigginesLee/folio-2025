@@ -1,4 +1,3 @@
-import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
 import gsap from 'gsap'
 
@@ -18,13 +17,14 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        this.basePosition = new THREE.Vector3(0, 4, -22)
-        this.position = this.basePosition.clone()
+        const respawn = this.game.respawns.getByName('cookieBanner')
+
+        this.position = respawn.position.clone()
         
         this.setInputs()
         this.setUnstuck()
 
-        this.game.physicalVehicle.moveTo(this.basePosition)
+        this.game.physicalVehicle.moveTo(respawn.position, respawn.rotation)
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -40,13 +40,15 @@ export class Player
     setInputs()
     {
         // Reset
-        this.game.inputs.events.on('reset', (_event) =>
+        this.game.inputs.events.on('respawn', (_event) =>
         {
             if(this.state !== Player.STATE_DEFAULT)
                 return
 
             if(_event.down)
-                this.game.physicalVehicle.moveTo(this.basePosition)
+            {
+                this.respawn()
+            }
         })
 
         // Suspensions
@@ -103,25 +105,37 @@ export class Player
         })
     }
 
+    respawn()
+    {
+        this.game.overlay.show()
+
+        gsap.delayedCall(2, () =>
+        {
+            const respawn = this.game.respawns.getClosest(this.position)
+            this.game.physicalVehicle.moveTo(
+                respawn.position,
+                respawn.rotation
+            )
+            
+            this.state = Player.STATE_DEFAULT
+            this.game.overlay.hide()
+        })
+    }
+
     die()
     {
         this.state = Player.STATE_DYING
         
         gsap.delayedCall(2, () =>
         {
-            this.game.overlay.show()
+            this.respawn()
+
+            gsap.delayedCall(3, () =>
+            {
+                this.state = Player.STATE_DEFAULT
+            })
         })
 
-        gsap.delayedCall(4, () =>
-        {
-            this.game.physicalVehicle.moveTo(this.basePosition)
-        })
-
-        gsap.delayedCall(5, () =>
-        {
-            this.state = Player.STATE_DEFAULT
-            this.game.overlay.hide()
-        })
     }
 
     updatePrePhysics()

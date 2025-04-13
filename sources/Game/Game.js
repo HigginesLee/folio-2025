@@ -33,6 +33,7 @@ import { Areas } from './Areas.js'
 import { Overlay } from './Overlay.js'
 import { Tornado } from './Tornado.js'
 import { InteractiveAreas } from './InteractiveAreas2.js'
+import { Respawns } from './Respawns.js'
 
 export class Game
 {
@@ -88,6 +89,7 @@ export class Game
                     [ 'overlayPatternTexture',          'overlay/overlayPattern.png',                   'texture', (resource) => { resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping } ],
                     [ 'cookieBannerTexture',            'cookieStand/cookieBanner.png',                 'texture', (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.flipY = false } ],
                     [ 'interactiveAreasKeyIconTexture', 'interactiveAreas/interactiveAreasKeyIcon.png', 'texture', (resource) => { resource.flipY = true; resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false } ],
+                    [ 'respawnsModel',                  'respawns/respawns.glb',                        'gltf'    ],
                     
                             
                             
@@ -128,7 +130,7 @@ export class Game
             { name: 'left',                  category: 'vehicle', keys: [ 'ArrowLeft', 'KeyA' ] },
             { name: 'boost',                 category: 'vehicle', keys: [ 'ShiftLeft', 'ShiftRight' ] },
             { name: 'brake',                 category: 'vehicle', keys: [ 'KeyB' ] },
-            { name: 'reset',                 category: 'vehicle', keys: [ 'KeyR' ] },
+            { name: 'respawn',               category: 'vehicle', keys: [ 'KeyR' ] },
             { name: 'suspensions',           category: 'vehicle', keys: [ 'Numpad5', 'Space' ] },
             { name: 'suspensionsFront',      category: 'vehicle', keys: [ 'Numpad8' ] },
             { name: 'suspensionsBack',       category: 'vehicle', keys: [ 'Numpad2' ] },
@@ -173,6 +175,7 @@ export class Game
             this.wireframe = new PhysicsWireframe()
             this.physicalVehicle = new PhysicsVehicle()
             this.areas = new Areas()
+            this.respawns = new Respawns()
             this.player = new Player()
             this.interactiveAreas = new InteractiveAreas()
             this.world = new World()
