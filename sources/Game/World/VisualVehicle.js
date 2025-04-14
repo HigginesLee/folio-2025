@@ -2,6 +2,7 @@ import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { Track } from '../GroundData/Track.js'
 import { Trails } from '../Trails.js'
+import { remapClamp } from '../utilities/maths.js'
 
 export class VisualVehicle
 {
@@ -57,6 +58,9 @@ export class VisualVehicle
         // Wheel
         this.parts.wheelContainer = this.game.resources.vehicle.scene.getObjectByName('wheelContainer')
         this.game.materials.updateObject(this.parts.wheelContainer)
+
+        // Antenna
+        this.parts.antenna = this.parts.chassis.getObjectByName('antenna')
     }
 
     setMainGroundTrack()
@@ -147,15 +151,13 @@ export class VisualVehicle
 
     setAntenna()
     {
-        const object = this.parts.chassis.getObjectByName('antenna')
-
-        if(!object)
+        if(!this.parts.antenna)
             return
 
         this.antenna = {}
         this.antenna.target = new THREE.Vector3(0, 2, 0)
         this.antenna.target = new THREE.Vector3(0, 2, 0)
-        this.antenna.object = object
+        this.antenna.object = this.parts.antenna
         this.antenna.head = this.game.resources.vehicle.scene.getObjectByName('antennaHead')
         this.antenna.headAxle = this.antenna.head.children[0]
         this.antenna.headReference = this.antenna.object.getObjectByName('antennaHeadReference')
@@ -240,12 +242,12 @@ export class VisualVehicle
         // Antenna
         if(this.antenna)
         {
-            const angle = Math.atan2(this.antenna.target.x - this.position.x, this.antenna.target.z - this.position.z)
+            const angle = Math.atan2(this.antenna.target.x - physicalVehicle.position.x, this.antenna.target.z - physicalVehicle.position.z)
             this.antenna.object.rotation.y = angle - this.parts.chassis.rotation.y
             this.antenna.headReference.getWorldPosition(this.antenna.head.position)
             this.antenna.head.lookAt(this.antenna.target)
 
-            const antennaTargetDistance = this.antenna.target.distanceTo(this.position)
+            const antennaTargetDistance = this.antenna.target.distanceTo(physicalVehicle.position)
             
             const antennaRotationSpeed = remapClamp(antennaTargetDistance, 50, 5, 1, 10)
             this.antenna.headAxle.rotation.z += this.game.ticker.deltaScaled * antennaRotationSpeed

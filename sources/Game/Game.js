@@ -63,7 +63,8 @@ export class Game
                 [
                     [ 'foliateTexture',                 'foliage/foliage.png',                          'texture' ],
                     [ 'bushesReferences',               'bushes/bushesReferences.glb',                  'gltf'    ],
-                    [ 'vehicle',                        'vehicle/default.glb',                          'gltf'    ],
+                    // [ 'vehicle',                        'vehicle/default.glb',                          'gltf'    ],
+                    [ 'vehicle',                        'vehicle/defaultAntenna.glb',                   'gltf'    ],
                     [ 'playgroundVisual',               'playground/playgroundVisual.glb',              'gltf'    ],
                     [ 'playgroundPhysical',             'playground/playgroundPhysical.glb',            'gltf'    ],
                     [ 'floorKeysTexture',               'floor/keys.png',                               'texture' ],

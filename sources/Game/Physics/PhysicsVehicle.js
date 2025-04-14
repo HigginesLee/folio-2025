@@ -251,25 +251,6 @@ export class PhysicsVehicle
         }
     }
 
-    setAntenna()
-    {
-        const object = this.parts.chassis.getObjectByName('antenna')
-
-        if(!object)
-            return
-
-        this.antenna = {}
-        this.antenna.target = new THREE.Vector3(0, 2, 0)
-        this.antenna.target = new THREE.Vector3(0, 2, 0)
-        this.antenna.object = object
-        this.antenna.head = this.game.resources.vehicle.scene.getObjectByName('antennaHead')
-        this.antenna.headAxle = this.antenna.head.children[0]
-        this.antenna.headReference = this.antenna.object.getObjectByName('antennaHeadReference')
-
-        this.game.materials.updateObject(this.antenna.head)
-        this.game.scene.add(this.antenna.head)
-    }
-
     setExplosions()
     {
         this.game.explosions.events.on('explosion', (coordinates) =>

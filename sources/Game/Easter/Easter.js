@@ -250,7 +250,7 @@ export class Easter
 
         if(this.eggs.closest)
         {
-            // this.game.vehicle.antenna.target.copy(this.eggs.closest.position)
+            this.game.world.visualVehicle.antenna.target.copy(this.eggs.closest.reference.position)
             this.eggs.tryCatch(this.eggs.closest)
         }
         else
