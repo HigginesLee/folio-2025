@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from './Game.js'
-import { bool, color, float, Fn, If, mix, positionGeometry, texture, uniform, vec2, vec4, viewportBottomLeft, viewportCoordinate, viewportSize, viewportTopLeft } from 'three/tsl'
+import { bool, color, float, Fn, If, mix, positionGeometry, texture, uniform, vec2, vec3, vec4, viewportBottomLeft, viewportCoordinate, viewportSize, viewportTopLeft } from 'three/tsl'
 import gsap from 'gsap'
 
 export class Overlay
@@ -10,8 +10,9 @@ export class Overlay
         this.game = Game.getInstance()
 
         // Uniforms
-        const baseColor = uniform(color('#231a21'))
-        this.progress = uniform(0)
+        const colorA = uniform(color('#251f2b'))
+        const colorB = uniform(color('#1d1721'))
+        this.progress = uniform(1)
         this.patternSize = uniform(200)
         this.strokeSize = uniform(10)
         this.inverted = uniform(0)
@@ -44,9 +45,9 @@ export class Overlay
 
             // Gradient
             const colorMix = viewportTopLeft.length()
-            const finalColor = mix(color('#251f2b'), color('#1d1721'), colorMix)
+            // return vec4(vec3(float(1).step(colorMix)), 1)
+            const finalColor = mix(colorA, colorB, colorMix)
 
-            // return vec4(viewportTopLeft, 1, 1)
             return vec4(finalColor, 1)
         })()
         material.vertexNode = vec4(positionGeometry.x, positionGeometry.y, 0, 1)
@@ -64,7 +65,8 @@ export class Overlay
                 title: '⬛️ Overlay',
                 expanded: false,
             })
-            this.game.debug.addThreeColorBinding(debugPanel, baseColor.value, 'color')
+            this.game.debug.addThreeColorBinding(debugPanel, colorA.value, 'colorA')
+            this.game.debug.addThreeColorBinding(debugPanel, colorB.value, 'colorB')
             debugPanel.addBinding(this.progress, 'value', { label: 'progress', min: 0, max: 1, step: 0.001 })
             debugPanel.addBinding(this.patternSize, 'value', { label: 'patternSize', min: 0, max: 500, step: 1 })
             debugPanel.addBinding(this.strokeSize, 'value', { label: 'strokeSize', min: 0, max: 50, step: 1 })
@@ -72,6 +74,14 @@ export class Overlay
             debugPanel.addButton({ title: 'show' }).on('click', () => { this.show() })
             debugPanel.addButton({ title: 'hide' }).on('click', () => { this.hide() })
         }
+
+        requestAnimationFrame(() =>
+        {
+            requestAnimationFrame(() =>
+            {
+                this.hide()
+            })
+        })
     }
 
     show(callback)

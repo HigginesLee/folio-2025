@@ -39,9 +39,10 @@ html, body, .game, .modals
     -moz-osx-font-smoothing: grayscale;
 }
 
-html, body
+html
 {
-    background: #231a21;
+    background: radial-gradient(farthest-side at 0 0, #251f2b, #1d1721);
+    /* background: radial-gradient(farthest-side at 0 0, #251f2b 99%, #ff0000); */
 }
 
 .fonts-loader
