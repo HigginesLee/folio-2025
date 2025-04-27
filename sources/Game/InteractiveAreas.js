@@ -16,7 +16,7 @@ export class InteractiveAreas
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '🔳 Interactive Areas',
-                expanded: true,
+                expanded: false,
             })
         }
 

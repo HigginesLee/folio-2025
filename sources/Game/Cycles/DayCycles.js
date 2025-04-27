@@ -5,7 +5,8 @@ export class DayCycles extends Cycles
 {
     constructor()
     {
-        super('🕜 Day Cycles', 4 * 60, null, false)
+        const forcedProgress = import.meta.env.VITE_SERVER_DAY_CYCLE_PROGRESS ? parseFloat(import.meta.env.VITE_SERVER_DAY_CYCLE_PROGRESS) : null
+        super('🕜 Day Cycles', 4 * 60, forcedProgress, false)
     }
 
     getKeyframesDescriptions()

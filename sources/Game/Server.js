@@ -14,12 +14,11 @@ export class Server
             localStorage.setItem('uuid', this.uuid)
         }
 
-        this.shouldConnect = true
         this.connected = false
         this.initData = null
         this.events = new Events()
 
-        if(this.shouldConnect)
+        if(import.meta.env.VITE_SERVER_CONNECT)
         {
             // First connect attempt
             this.connect()
@@ -35,7 +34,7 @@ export class Server
 
     connect()
     {
-        this.socket = new WebSocket(import.meta.env.VITE_SERVER_WS_URL)
+        this.socket = new WebSocket(import.meta.env.VITE_SERVER_SERVER_URL)
         this.socket.binaryType = 'arraybuffer'
 
         this.socket.addEventListener('open', () =>

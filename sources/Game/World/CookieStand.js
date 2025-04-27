@@ -15,7 +15,7 @@ export class CookieStand
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '🍪 Cookie Stand',
-                expanded: true,
+                expanded: false,
             })
         }
 
