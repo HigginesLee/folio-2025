@@ -11,6 +11,7 @@ export class Modals
         this.current = null
         this.pending = null
         this.default = null
+        this.preventInputClose = false
 
         this.setClose()
         this.setItems()
@@ -92,6 +93,9 @@ export class Modals
 
         this.game.inputs.events.on('close', (event) =>
         {
+            if(this.preventInputClose)
+                return
+
             if(event.down)
             {
                 if(this.visible)

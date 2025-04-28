@@ -27,7 +27,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Nunito&display=block" rel="stylesheet">
     
-    <link rel="stylesheet" href="./style/index.css">
+    <link rel="stylesheet" href="./style/index.styl">
 
     <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
@@ -49,7 +49,7 @@
         <div class="js-modals modals is-displayed is-visible">
 
             <!-- Intro -->
-            <div class="js-modal modal intro is-displayed" data-name="intro" data-default>
+            <div class="js-modal modal intro" data-name="intro" data-default>
                 <div class="container">
                     <div class="preview">
                         <img class="background" src="ui/intro/preview.png">
@@ -115,7 +115,7 @@
             </div>
 
             <!-- Whispers -->
-            <div class="js-modal modal whispers" data-name="whispers">
+            <div class="js-modal modal whispers is-displayed" data-name="whispers">
                 <div class="container">
                     <div class="preview">
                         <img class="background" src="ui/whispers/preview.png">
@@ -131,6 +131,7 @@
                             - Everyone can see them<br />
                             - New whispers remove old ones (max 30)<br />
                             - One whisper per user<br />
+                            - Choose a flag<br />
                             - No slur!<br />
                             - Max 30 characters
                         </p>
@@ -138,8 +139,73 @@
                             <img src="ui/warning.svg" alt="" class="icon"> Server seems to be offline
                         </p>
                         <form class="js-input-group input-group">
-                            <input class="js-input js-main-focus" type="text" placeholder="Your message" maxlength="30" />
-                            <button>
+                            <div class="js-input-flag input-flag">
+                                <div class="js-flag-button flag-button">
+                                    <img class="js-flag flag" src="ui/flags/fr.png">
+                                    <svg class="none" width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0.551758 1.7258C6.55166 -2.27398 11.0001 3.40978 19 1.40953L23 13.4096C15.5952 15.2611 11.6175 10.2589 6.30859 12.6762L8.44824 19.0941L6.55176 19.7269L0.551758 1.7258ZM5.26562 2.00328C4.68209 2.01685 4.07959 2.11674 3.42871 2.37242L6.16309 10.5746C7.17704 10.2014 8.1765 10.0274 9.17188 10.0043C10.8337 9.96566 12.395 10.3531 13.7764 10.7299C15.9783 11.3304 17.9741 11.9562 20.3564 11.806L17.6533 3.69664C13.9491 4.17921 11.0237 3.21654 8.72363 2.58922C7.3553 2.21603 6.29108 1.97952 5.26562 2.00328Z" fill="white"/>
+                                    </svg>
+                                </div>
+
+                                <div class="js-flag-select flag-select">
+                                    <button class="js-flag-close close-mini">
+                                        <img src="ui/close-mini.svg">
+                                    </button>
+                                    <button class="js-flag-remove remove">
+                                        <img src="ui/remove.svg">
+                                    </button>
+                                    <input type="text" class="js-flag-search search" placeholder="Search…">
+                                    <div class="js-no-result no-result">
+                                        No result
+                                    </div>
+                                    <div class="choices">
+                                        <div class="js-scroller scroller">
+                                            <div class="js-choice choice" data-code="de" data-terms="de germany deutschland">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Germany (de)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="es" data-terms="es spain espana">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Spain (es)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="fr" data-terms="fr france france">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">France (fr)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="jp" data-terms="jp japan nihon">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Japan (jp)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="it" data-terms="it italy italia">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Italy (it)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="br" data-terms="br brazil brasil">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Brazil (br)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="ru" data-terms="ru russia rossiya">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Russia (ru)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="cn" data-terms="cn china zhongguo">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">China (cn)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="gr" data-terms="gr greece ellada">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Greece (gr)</span>
+                                            </div>
+                                            <div class="js-choice choice" data-code="eg" data-terms="eg egypt مصر">
+                                                <img class="js-flag flag" src="ui/flags/fr.png">
+                                                <span class="label">Egypt (eg)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input class="js-input input-text js-main-focus" type="text" placeholder="Your message" maxlength="30" />
+                            <button class="submit">
                                 <svg width="39" height="38" viewBox="0 0 39 38" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M10.984 26.0434C11.087 26.0016 11.1916 25.9584 11.2975 25.914C12.9298 25.2289 14.998 24.1857 16.3708 22.8128C16.8477 22.3359 17.1994 21.573 17.4799 20.7863C17.7749 19.9587 18.0444 18.9447 18.2905 17.831C18.7834 15.6008 19.2022 12.8805 19.541 10.26C19.5427 10.2476 19.5443 10.2352 19.5459 10.2228C19.8659 12.7209 20.2775 15.3149 20.7957 17.4944C21.063 18.6186 21.3637 19.6547 21.7037 20.5201C22.0343 21.3616 22.4398 22.1422 22.963 22.6655C24.5715 24.2739 26.4382 25.3527 27.8827 26.0268C27.9024 26.036 27.922 26.0452 27.9416 26.0542C27.8074 26.1139 27.6701 26.1761 27.5304 26.2406C26.0017 26.9468 24.0681 27.9906 22.8116 29.2618C21.4879 30.6008 20.4455 32.6674 19.7513 34.3012C19.698 34.4266 19.6465 34.5502 19.5967 34.6716C19.5466 34.5489 19.4948 34.424 19.4411 34.2972C18.7484 32.6615 17.7049 30.5918 16.3708 29.2577C15.0363 27.9233 12.966 26.8799 11.3298 26.1873C11.2129 26.1378 11.0975 26.0899 10.984 26.0434Z" stroke="#FFCECA" stroke-width="2"/>
                                     <path d="M30 17L30 9M26 13L34 13" stroke="#FFCECA" stroke-width="2" stroke-linecap="round"/>

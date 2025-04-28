@@ -345,6 +345,7 @@ export class Whispers
             this.modal.previewMessageElement.textContent = 'Your message here'
             this.modal.inputElement.value = ''
             updateGroup()
+            closeFlagSelect()
         })
 
         // Server connect / disconnect
@@ -362,6 +363,161 @@ export class Whispers
             this.modal.offlineElement.style.display = 'block'
             updateGroup()
         })
+
+        /**
+         * Flag
+         */
+        // Setup
+        this.modal.inputFlag = this.modal.inputGroupElement.querySelector('.js-input-flag')
+        this.modal.flagButton = this.modal.inputFlag.querySelector('.js-flag-button')
+        this.modal.flag = this.modal.flagButton.querySelector('.js-flag')
+        this.modal.flagSelect = this.modal.inputFlag.querySelector('.js-flag-select')
+        this.modal.flagClose = this.modal.inputFlag.querySelector('.js-flag-close')
+        this.modal.flagSearch = this.modal.inputFlag.querySelector('.js-flag-search')
+        this.modal.flagRemove = this.modal.inputFlag.querySelector('.js-flag-remove')
+        this.modal.noResult = this.modal.inputFlag.querySelector('.js-no-result')
+        this.modal.flagsSelectOpen = false
+
+        this.modal.flagActive = null
+
+        // Select
+        const selectFlag = (country = null) =>
+        {
+            if(country)
+            {
+                this.modal.flagActive = country
+                this.modal.flag.src = country.imageUrl
+                this.modal.flagButton.classList.add('has-flag')
+                localStorage.setItem('countryCode', country.code)
+            }
+            else
+            {
+                this.modal.flagActive = null
+                this.modal.flagButton.classList.remove('has-flag')
+                localStorage.removeItem('countryCode')
+            }
+
+            closeFlagSelect()
+        }
+
+        // Remove
+        this.modal.flagRemove.addEventListener('click', (event) =>
+        {
+            event.preventDefault()
+            selectFlag(null)
+        })
+
+        // Countries
+        const choices = this.modal.inputFlag.querySelectorAll('.js-choice')
+        this.countries = new Map()
+
+        for(const _choice of choices)
+        {
+            const country = {}
+            country.element = _choice
+            country.terms = country.element.dataset.terms
+            country.imageUrl = country.element.querySelector('.js-flag').src
+            country.code = country.element.dataset.code
+
+            country.element.addEventListener('click', () =>
+            {
+                selectFlag(country)
+            })
+
+            this.countries.set(country.code, country)
+        }
+
+        // Search
+        const searchFlag = (value) =>
+        {
+            const sanatizedValue = value.trim()
+            let found = false
+
+            // Empty search => All countries
+            if(sanatizedValue === '')
+            {
+                found = true
+                this.countries.forEach((country) =>
+                {
+                    country.element.style.display = 'block'
+                })
+            }
+
+            // Non-empty search => Search each terms
+            else
+            {
+                this.countries.forEach((country) =>
+                {
+                    if(country.terms.match(new RegExp(sanatizedValue)))
+                    {
+                        found = true
+                        country.element.style.display = 'block'
+                    }
+                    else
+                    {
+                        country.element.style.display = 'none'
+                    }
+                })
+            }
+
+            // No result
+            if(!found)
+                this.modal.noResult.classList.add('is-visible')
+            else
+                this.modal.noResult.classList.remove('is-visible')
+        }
+
+        this.modal.flagSearch.addEventListener('input', () =>
+        {
+            searchFlag(this.modal.flagSearch.value)
+        })
+
+        // Open
+        const openFlagSelect = () =>
+        {
+            this.modal.flagsSelectOpen = true
+            this.modal.flagSelect.classList.add('is-visible')
+            this.modal.flagSearch.focus()
+            this.game.modals.preventInputClose = true
+        }
+
+        this.modal.flagButton.addEventListener('click', (event) =>
+        {
+            event.preventDefault()
+            openFlagSelect()
+        })
+
+        // Close
+        const closeFlagSelect = () =>
+        {
+            this.modal.flagsSelectOpen = false
+            this.modal.flagSelect.classList.remove('is-visible')
+            this.game.modals.preventInputClose = false
+        }
+
+        this.modal.flagClose.addEventListener('click', (event) =>
+        {
+            event.preventDefault()
+            closeFlagSelect()
+        })
+
+        this.game.inputs.events.on('close', (event) =>
+        {
+            if(this.modal.flagsSelectOpen && event.down)
+            {
+                closeFlagSelect()
+            }
+        })
+
+        // From localstorage
+        const countryCode = localStorage.getItem('countryCode') ?? null
+        if(countryCode)
+        {
+            const country = this.countries.get(countryCode) ?? null
+
+            if(country)
+                selectFlag(country)
+        }
     }
 
     setInputs()
