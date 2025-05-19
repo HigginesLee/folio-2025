@@ -10,13 +10,17 @@ export class Projects
 {
     static DIRECTION_PREVIOUS = 1
     static DIRECTION_NEXT = 2
+    static STATE_OPEN = 3
+    static STATE_OPENENING = 4
+    static STATE_CLOSED = 5
+    static STATE_CLOSING = 6
 
     constructor(parameters)
     {
         this.game = Game.getInstance()
         this.parameters = parameters
 
-        this.opened = false
+        this.state = Projects.STATE_CLOSED
         this.index = 0
         this.imageIndex = 0
         this.currentProject = null
@@ -57,10 +61,6 @@ export class Projects
             this.debugPanel.addButton({ title: 'open', label: 'open' }).on('click', () => { this.open() })
             this.debugPanel.addButton({ title: 'close', label: 'close' }).on('click', () => { this.close() })
         }
-
-        // this.game.ticker.events.on('tick', () =>
-        // {
-        // })
     }
 
     setInteractiveArea()
@@ -93,6 +93,14 @@ export class Projects
         {
             if(event.down)
                 this.next()
+        })
+
+        this.game.inputs.events.on('interact', (event) =>
+        {
+            if(!event.down && this.state === Projects.STATE_OPEN)
+            {
+                this.url.open()
+            }
         })
     }
 
@@ -609,6 +617,45 @@ export class Projects
 
     setTitle()
     {
+        this.title = {}
+        this.title.status = 'hidden'
+        this.title.group = this.parameters.title
+        this.title.inner = this.title.group.children[0]
+        this.title.textMesh = this.title.inner.children.find(_child => _child.name.startsWith('text'))
+        this.title.textWrapper = new TextWrapper(
+            this.texts.fontFamily,
+            this.texts.fontWeight,
+            this.texts.fontSizeMultiplier * 0.4,
+            4,
+            0.6,
+            this.density,
+            'center'
+        )
+        this.texts.createMaterialOnMesh(this.title.textMesh, this.title.textWrapper.texture)
+
+        this.title.update = (direction) =>
+        {
+            if(this.title.status === 'hiding')
+                return
+
+            this.title.status = 'hiding'
+
+            const rotationDirection = direction === Projects.DIRECTION_NEXT ? - 1 : 1
+
+            this.title.inner.rotation.x = 0
+            gsap.to(this.title.inner.rotation, { x: Math.PI * rotationDirection, duration: 1, delay: 0, ease: 'power2.in', overwrite: true, onComplete: () =>
+            {
+                this.title.status = 'visible'
+
+                gsap.to(this.title.inner.rotation, { x: Math.PI * 2 * rotationDirection, duration: 1, delay: 0, ease: 'back.out(2)', overwrite: true })
+
+                this.title.textWrapper.updateText(this.currentProject.title)
+            } })
+        }
+    }
+
+    setUrl()
+    {
         this.url = {}
         this.url.status = 'hidden'
         this.url.group = this.parameters.url
@@ -649,44 +696,13 @@ export class Projects
 
             } })
         }
-    }
 
-    setUrl()
-    {
-        this.title = {}
-        this.title.status = 'hidden'
-        this.title.group = this.parameters.title
-        this.title.inner = this.title.group.children[0]
-        this.title.textMesh = this.title.inner.children.find(_child => _child.name.startsWith('text'))
-        this.title.textWrapper = new TextWrapper(
-            this.texts.fontFamily,
-            this.texts.fontWeight,
-            this.texts.fontSizeMultiplier * 0.4,
-            4,
-            0.6,
-            this.density,
-            'center'
-        )
-        this.texts.createMaterialOnMesh(this.title.textMesh, this.title.textWrapper.texture)
-
-        this.title.update = (direction) =>
+        this.url.open = () =>
         {
-            if(this.title.status === 'hiding')
-                return
-
-            this.title.status = 'hiding'
-
-            const rotationDirection = direction === Projects.DIRECTION_NEXT ? - 1 : 1
-
-            this.title.inner.rotation.x = 0
-            gsap.to(this.title.inner.rotation, { x: Math.PI * rotationDirection, duration: 1, delay: 0, ease: 'power2.in', overwrite: true, onComplete: () =>
+            if(this.currentProject.url)
             {
-                this.title.status = 'visible'
-
-                gsap.to(this.title.inner.rotation, { x: Math.PI * 2 * rotationDirection, duration: 1, delay: 0, ease: 'back.out(2)', overwrite: true })
-
-                this.title.textWrapper.updateText(this.currentProject.title)
-            } })
+                window.open(this.currentProject.url, '_blank')
+            }
         }
     }
 
@@ -773,7 +789,7 @@ export class Projects
             repeatDelay: 5,
             onRepeat: () =>
             {
-                if(!this.opened || !this.board.active)
+                if(this.state === Projects.STATE_OPEN || !this.board.active)
                     this.board.timeline.pause()
             }
         })
@@ -828,10 +844,20 @@ export class Projects
 
     open()
     {
-        if(this.opened)
+        if(this.state === Projects.STATE_OPEN || this.state === Projects.STATE_OPENING)
             return
 
-        this.opened = true
+        // State
+        this.state = Projects.STATE_OPENING
+
+        if(this.stateTransition)
+            this.stateTransition.kill()
+
+        this.stateTransition = gsap.delayedCall(1.5, () =>
+        {
+            this.state = Projects.STATE_OPEN
+            this.stateTransition = null
+        })
 
         // Inputs filters
         this.game.inputs.updateFilters(['cinematic'])
@@ -856,10 +882,20 @@ export class Projects
 
     close()
     {
-        if(!this.opened)
+        if(this.state === Projects.STATE_CLOSED || this.state === Projects.STATE_CLOSING)
             return
-            
-        this.opened = false
+
+        // State
+        this.state = Projects.STATE_CLOSING
+
+        if(this.stateTransition)
+            this.stateTransition.kill()
+
+        this.stateTransition = gsap.delayedCall(1.5, () =>
+        {
+            this.state = Projects.STATE_CLOSED
+            this.stateTransition = null
+        })
 
         // Input filters
         this.game.inputs.updateFilters([])
@@ -880,7 +916,7 @@ export class Projects
 
     previous()
     {
-        if(!this.opened)
+        if(this.state === Projects.STATE_CLOSED || this.state === Projects.STATE_CLOSING)
             return
 
         if(this.imageIndex > 0)
@@ -893,7 +929,7 @@ export class Projects
 
     next()
     {
-        if(!this.opened)
+        if(this.state === Projects.STATE_CLOSED || this.state === Projects.STATE_CLOSING)
             return
 
         if(this.imageIndex < this.currentProject.images.length - 1)

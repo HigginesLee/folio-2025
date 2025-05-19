@@ -3,10 +3,10 @@ import { Game } from './Game.js'
 
 export class Modals
 {
-    static OPENED = 1
+    static OPEN = 1
     static OPENING = 2
-    static CLOSING = 3
-    static CLOSED = 4
+    static CLOSED = 3
+    static CLOSING = 4
     
     constructor()
     {
@@ -31,7 +31,7 @@ export class Modals
     {
         if(this.state === Modals.OPENING)
         {
-            this.state = Modals.OPENED
+            this.state = Modals.OPEN
             this.current.events.trigger('opened')
         }
         else if(this.state === Modals.CLOSING)
@@ -95,7 +95,7 @@ export class Modals
 
     toggle()
     {
-        if(this.state === Modals.OPENED || this.state === Modals.OPENING)
+        if(this.state === Modals.OPEN || this.state === Modals.OPENING)
         {
             this.pending = null
             this.close()
@@ -115,7 +115,7 @@ export class Modals
             return
 
         // Already visible => Set pending
-        if(this.state === Modals.OPENED || this.state === Modals.OPENING)
+        if(this.state === Modals.OPEN || this.state === Modals.OPENING)
         {
             if(item === this.current)
                 return

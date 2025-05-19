@@ -75,6 +75,23 @@ export class Inputs
         for(const _map of this.map)
             this.keys[_map.name] = false
 
+        document.addEventListener('visibilitychange', () =>
+        {
+            // Tab opened
+            if(!document.hidden)
+            {
+                // Each current key => Find map and simulate key up
+                for(const keyName in this.keys)
+                {
+                    const map = this.map.find((_map) => _map.name === keyName)
+
+                    delete this.keys[keyName]
+                    this.events.trigger('keyUp', [ { down: false, name: map.name } ])
+                    this.events.trigger(map.name, [ { down: false, name: map.name } ])
+                }
+            }
+        })
+
         addEventListener('keydown', (_event) =>
         {
             this.down(_event.code)
@@ -125,7 +142,7 @@ export class Inputs
 
         if(map && this.keys[map.name])
         {
-            this.keys[map.name] = false
+            delete this.keys[map.name]
             this.events.trigger('keyUp', [ { down: false, name: map.name } ])
             this.events.trigger(map.name, [ { down: false, name: map.name } ])
         }

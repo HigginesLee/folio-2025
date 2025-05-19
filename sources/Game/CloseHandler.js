@@ -1,4 +1,5 @@
 import { Game } from './Game.js'
+import { Projects } from './World/Projects.js'
 
 export class CloseHandler
 {
@@ -25,7 +26,7 @@ export class CloseHandler
             this.game.world.whispers.modal.closeFlagSelect()
 
         // Projects => Close
-        else if(this.game.world.scenery.projects?.opened)
+        else if(this.game.world.scenery.projects?.state === Projects.STATE_OPEN || this.game.world.scenery.projects?.state === Projects.STATE_OPENING)
             this.game.world.scenery.projects.close()
 
         // Modals => Toggle

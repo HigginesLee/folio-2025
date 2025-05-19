@@ -56,7 +56,7 @@ export class Player
             { name: 'suspensionsFrontRight', categories: [ 'playing'              ], keys: [ 'Numpad9' ] },
             { name: 'suspensionsBackRight',  categories: [ 'playing'              ], keys: [ 'Numpad3' ] },
             { name: 'suspensionsBackLeft',   categories: [ 'playing'              ], keys: [ 'Numpad1' ] },
-            { name: 'interact',              categories: [ 'playing'              ], keys: [ 'Enter' ] },
+            { name: 'interact',              categories: [ 'playing', 'cinematic' ], keys: [ 'Enter' ] },
         ])
 
         // Reset
