@@ -11,11 +11,11 @@ export default [
         distinctions: [ 'fwa' ], // 'awwwards', 'fwa', 'cssda'
         images:
         [
-            'threejs-journey-1.png',
-            'threejs-journey-2.png',
-            'threejs-journey-3.png',
-            'threejs-journey-4.png',
-            'threejs-journey-5.png',
+            'threejs-journey-1.webp',
+            'threejs-journey-2.webp',
+            'threejs-journey-3.webp',
+            'threejs-journey-4.webp',
+            'threejs-journey-5.webp',
         ]
     },
     {
@@ -31,9 +31,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ], // 'awwwards', 'fwa', 'cssda'
         images:
         [
-            'chartogne-taillet-1.png',
-            'chartogne-taillet-2.png',
-            'chartogne-taillet-3.png',
+            'chartogne-taillet-1.webp',
+            'chartogne-taillet-2.webp',
+            'chartogne-taillet-3.webp',
         ]
     },
     {
@@ -48,9 +48,9 @@ export default [
         distinctions: [ 'awwwards', 'fwa' ],
         images:
         [
-            'bonhomme-10-ans-1.png',
-            'bonhomme-10-ans-2.png',
-            'bonhomme-10-ans-3.png',
+            'bonhomme-10-ans-1.webp',
+            'bonhomme-10-ans-2.webp',
+            'bonhomme-10-ans-3.webp',
         ]
     },
     {
@@ -66,9 +66,9 @@ export default [
         distinctions: [ 'awwwards' ],
         images:
         [
-            'madbox-1.png',
-            'madbox-2.png',
-            'madbox-3.png',
+            'madbox-1.webp',
+            'madbox-2.webp',
+            'madbox-3.webp',
         ]
     },
     {
@@ -84,10 +84,10 @@ export default [
         distinctions: [ 'awwwards', 'fwa' ],
         images:
         [
-            'luni-1.png',
-            'luni-2.png',
-            'luni-3.png',
-            'luni-4.png',
+            'luni-1.webp',
+            'luni-2.webp',
+            'luni-3.webp',
+            'luni-4.webp',
         ]
     },
     {
@@ -102,9 +102,9 @@ export default [
         distinctions: [  ],
         images:
         [
-            'scout-1.png',
-            'scout-2.png',
-            'scout-3.png',
+            'scout-1.webp',
+            'scout-2.webp',
+            'scout-3.webp',
         ]
     },
     {
@@ -119,9 +119,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'prior-1.png',
-            'prior-2.png',
-            'prior-3.png',
+            'prior-1.webp',
+            'prior-2.webp',
+            'prior-3.webp',
         ]
     },
     {
@@ -136,14 +136,14 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'orano-1.png',
-            'orano-2.png',
-            'orano-3.png',
+            'orano-1.webp',
+            'orano-2.webp',
+            'orano-3.webp',
         ]
     },
     {
-        title: 'Citrix / Redull',
-        titleSmall:  'Citrix / Redull',
+        title: 'Citrix / Redbull',
+        titleSmall: ['Citrix', 'Redbull'],
         url: 'thenewmobileworkforce.imm-g-prod.com',
         attributes:
         {
@@ -154,9 +154,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'citrix-redbull-1.png',
-            'citrix-redbull-2.png',
-            'citrix-redbull-3.png',
+            'citrix-redbull-1.webp',
+            'citrix-redbull-2.webp',
+            'citrix-redbull-3.webp',
         ]
     }
 ]
