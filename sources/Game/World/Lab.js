@@ -985,7 +985,7 @@ export class Lab
     {
         const meshes = this.references.get('candleFlame')
 
-        const baseMaterial = this.game.materials.getFromName('emissiveGradientWarm')
+        const baseMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
         material.colorNode = baseMaterial.colorNode
         material.positionNode = Fn(() =>

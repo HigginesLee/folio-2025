@@ -81,7 +81,7 @@ export class CookieStand
 
     setParticles()
     {
-        const emissiveMaterial = this.game.materials.getFromName('emissiveGradientWarm')
+        const emissiveMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
 
         const count = 30
         const elevation = uniform(3)

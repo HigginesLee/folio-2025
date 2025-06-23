@@ -26,7 +26,7 @@ export class Bonfire
 
     setParticles()
     {
-        const emissiveMaterial = this.game.materials.getFromName('emissiveGradientWarm')
+        const emissiveMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
 
         const count = 30
         const elevation = uniform(5)
@@ -96,7 +96,7 @@ export class Bonfire
                 this.game.player.respawn(null, () =>
                 {
                     this.particles.visible = true
-                    this.burn.material = this.game.materials.getFromName('emissiveGradientWarm')
+                    this.burn.material = this.game.materials.getFromName('emissiveOrangeRadialGradient')
 
                     this.game.entities.reset()
                 })

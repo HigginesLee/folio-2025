@@ -30,7 +30,7 @@ export class PoleLights
     {
         this.emissive = {}
         this.emissive.offMaterial = this.game.materials.getFromName('glass')
-        this.emissive.onMaterial = this.game.materials.getFromName('emissiveGradientWarm')
+        this.emissive.onMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
     }
 
     setFireflies()

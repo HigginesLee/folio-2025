@@ -1064,7 +1064,7 @@ export class Projects
         mesh.scale.setScalar(0)
         mesh.visible = false
 
-        const baseMaterial = this.game.materials.getFromName('emissiveGradientWarm')
+        const baseMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
         material.colorNode = baseMaterial.colorNode
         material.positionNode = Fn(() =>

@@ -209,7 +209,6 @@ export class Scenery
     {
         // Models
         const model = this.game.resources.sceneryTestModel.scene
-        console.log(model.children)
         
         // References
         this.references.parse(model)

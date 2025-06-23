@@ -21,10 +21,11 @@ export class Materials
         this.setLuminance()
         this.setPreviews()
 
-        this.createEmissiveGradient('emissiveGradientWarm', '#ff8641', '#ff3e00', 1.7, this.debugPanel?.addFolder({ title: 'emissiveGradientWarm' }))
-        this.createEmissiveGradient('emissivePurpleRadialGradient', '#b65fff', '#ff3243', 1.7, this.debugPanel?.addFolder({ title: 'emissivePurpleRadialGradient' }))
-        this.createEmissiveGradient('emissiveBlueRadialGradient', '#91f0ff', '#128fff', 1.7, this.debugPanel?.addFolder({ title: 'emissiveBlueRadialGradient' }))
-        this.createEmissiveGradient('emissiveGreenRadialGradient', '#a2ffab', '#ccff00', 1.7, this.debugPanel?.addFolder({ title: 'emissiveGreenRadialGradient' }))
+        this.createEmissiveGradient('emissiveOrangeRadialGradient', '#ff8641', '#ff3e00', 1.7, true, this.debugPanel?.addFolder({ title: 'emissiveOrangeRadialGradient' }))
+        this.createEmissiveGradient('emissivePurpleRadialGradient', '#b65fff', '#ff3243', 1.7, true, this.debugPanel?.addFolder({ title: 'emissivePurpleRadialGradient' }))
+        this.createEmissiveGradient('emissiveBlueRadialGradient', '#91f0ff', '#128fff', 1.7, true, this.debugPanel?.addFolder({ title: 'emissiveBlueRadialGradient' }))
+        this.createEmissiveGradient('emissiveGreenRadialGradient', '#a2ffab', '#ccff00', 1.7, true, this.debugPanel?.addFolder({ title: 'emissiveGreenRadialGradient' }))
+        this.createEmissiveGradient('emissiveWhiteRadialGradient', '#ffffff', '#666666', 2.7, false, this.debugPanel?.addFolder({ title: 'emissiveWhiteRadialGradient' }))
         this.createEmissive('emissiveOrange', '#ff3e00', 3, this.debugPanel?.addFolder({ title: 'emissiveOrange' }))
         this.createEmissive('emissiveRed', '#ff3131', 3, this.debugPanel?.addFolder({ title: 'emissiveRed' }))
         this.createEmissive('emissivePurple', '#a64dff', 3, this.debugPanel?.addFolder({ title: 'emissivePurple' }))
@@ -119,15 +120,19 @@ export class Materials
         return material
     }
 
-    createEmissiveGradient(_name = 'material', _colorA = '#ffffff', _colorB = '#ff0000', _intensity = 3, debugPanel = null)
+    createEmissiveGradient(_name = 'material', _colorA = '#ffffff', _colorB = '#ff0000', _intensity = 3, normalize = true, debugPanel = null)
     {
         const colorA = uniform(color(_colorA))
         const colorB = uniform(color(_colorB))
         const intensity = uniform(_intensity)
 
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        const mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
-        material.colorNode = mixedColor.div(luminance(mixedColor)).mul(intensity)
+        let mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+
+        if(normalize)
+            mixedColor = mixedColor.div(luminance(mixedColor))
+
+        material.colorNode = mixedColor.mul(intensity)
         material.fog = false
         this.save(_name, material)
 
@@ -320,7 +325,10 @@ export class Materials
         mesh.traverse((child) =>
         {
             if(child.isMesh)
-                child.material = this.getFromName(child.material.name, child.material)
+            {
+                if(typeof child.material.userData.preventConversion === 'undefined' || !child.material.userData.preventConversion)
+                    child.material = this.getFromName(child.material.name, child.material)
+            }
         })
     }
 }
