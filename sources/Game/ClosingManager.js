@@ -29,18 +29,16 @@ export class ClosingManager
                 }
 
                 // Projects => Close
-                else if(this.game.world.scenery.projects?.state === Projects.STATE_OPEN || this.game.world.scenery.projects?.state === Projects.STATE_OPENING)
+                else if(this.game.world.scenery?.projects?.state === Projects.STATE_OPEN || this.game.world.scenery?.projects?.state === Projects.STATE_OPENING)
                     this.game.world.scenery.projects.close()
 
                 // Lab => Close
-                else if(this.game.world.scenery.lab?.state === Lab.STATE_OPEN || this.game.world.scenery.lab?.state === Lab.STATE_OPENING)
+                else if(this.game.world.scenery?.lab?.state === Lab.STATE_OPEN || this.game.world.scenery?.lab?.state === Lab.STATE_OPENING)
                     this.game.world.scenery.lab.close()
 
                 // Nothing opened and used the keyboard Escape key => Open default modal
                 else if(this.game.modals.default && action.activeKeys.has('Keyboard.Escape'))
-                {
                     this.game.modals.open(this.game.modals.default.name)
-                }
             }
         })
         

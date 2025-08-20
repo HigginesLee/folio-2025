@@ -18,9 +18,15 @@ export class Pointer
         this.mode = Pointer.MODE_MOUSE
         this.upcomingDown = false
         this.hasMoved = false
-        this.hasDowned = false
-        this.hasReleased = false
-        this.touchesLength = 0
+        this.upcomingTouches = []
+        this.touches = []
+        this.pinch = {
+            ratio: 1,
+            ratioDelta: 0,
+            baseDistance: 0,
+            distance: 0,
+            distanceDelta: 0
+        }
 
         this.element.addEventListener('mousemove', (_event) =>
         {
@@ -58,17 +64,19 @@ export class Pointer
             _event.preventDefault()
 
             this.mode = Pointer.MODE_TOUCH
+            this.upcomingTouches = [ ..._event.touches ]
             
+            // Calculate average
             let x = 0
             let y = 0
 
-            for(const touch of _event.touches)
+            for(const touch of this.upcomingTouches)
             {
                 x += touch.clientX
                 y += touch.clientY
             }
-            x /= this.touchesLength
-            y /= this.touchesLength
+            x /= this.upcomingTouches.length
+            y /= this.upcomingTouches.length
 
             this.upcoming.x = x
             this.upcoming.y = y
@@ -79,21 +87,20 @@ export class Pointer
             _event.preventDefault()
 
             this.mode = Pointer.MODE_TOUCH
-
             this.upcomingDown = true
+            this.upcomingTouches = [ ..._event.touches ]
 
-            this.touchesLength = _event.touches.length
-
+            // Calculate average
             let x = 0
             let y = 0
 
-            for(const touch of _event.touches)
+            for(const touch of this.upcomingTouches)
             {
                 x += touch.clientX
                 y += touch.clientY
             }
-            x /= this.touchesLength
-            y /= this.touchesLength
+            x /= this.upcomingTouches.length
+            y /= this.upcomingTouches.length
 
             this.current.x = x
             this.current.y = y
@@ -105,9 +112,9 @@ export class Pointer
         {
             _event.preventDefault()
 
-            this.touchesLength = _event.touches.length
+            this.upcomingTouches = [ ..._event.touches ]
 
-            if(this.touchesLength === 0)
+            if(this.touches.length === 0)
                 this.upcomingDown = false
         })
 
@@ -119,36 +126,62 @@ export class Pointer
 
     update()
     {
+        // Update from upcoming
         this.delta.x = this.upcoming.x - this.current.x
         this.delta.y = this.upcoming.y - this.current.y
 
         this.current.x = this.upcoming.x
         this.current.y = this.upcoming.y
 
-        this.hasMoved = this.delta.x !== 0 || this.delta.y !== 0
+        // Pinch from upcoming touches
+        if(this.upcomingTouches.length >= 2)
+        {
+            let maxDistance = 0
+            for(let i = 0; i < this.upcomingTouches.length; i++)
+            {
+                for(let j = i + 1; j < this.upcomingTouches.length; j++)
+                {
+                    const dX = this.upcomingTouches[i].clientX - this.upcomingTouches[j].clientX
+                    const dY = this.upcomingTouches[i].clientY - this.upcomingTouches[j].clientY
+                    const distance = Math.sqrt(dX * dX, dY * dY)
 
-        this.hasDowned = false
-        this.hasReleased = false
+                    if(distance > maxDistance)
+                        maxDistance = distance
+                }
+            }
+
+            this.pinch.distanceDelta = maxDistance - this.pinch.distance
+            this.pinch.distance = maxDistance
+
+            if(this.upcomingTouches.length > this.touches.length)
+                this.pinch.baseDistance = this.pinch.distance
+        
+            const pinchRatio = this.pinch.distance / this.pinch.baseDistance
+
+            if(pinchRatio !== this.pinch.ratio)
+            {
+                this.pinch.ratioDelta = pinchRatio - this.pinch.ratio
+                this.pinch.ratio = pinchRatio
+                this.events.trigger('pinch')
+            }
+        }
+
+        this.touches = [ ...this.upcomingTouches ]
+
+        // Define what has changed and trigger events
+        this.hasMoved = this.delta.x !== 0 || this.delta.y !== 0
         
         if(this.upcomingDown !== this.isDown)
         {
             this.isDown = this.upcomingDown
 
             if(this.isDown)
-            {
-                this.hasDowned = true
                 this.events.trigger('down')
-            }
             else
-            {
-                this.hasReleased = true
                 this.events.trigger('up')
-            }
         }
 
         if(this.hasMoved)
-        {
             this.events.trigger('move')
-        }
     }
 }

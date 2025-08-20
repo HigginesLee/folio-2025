@@ -497,7 +497,8 @@ export class View
                 // Focus point
                 if(action.active)
                 {
-                    if(this.game.inputs.pointer.type === Pointer.MODE_MOUSE || this.game.inputs.pointer.touchesLength >= 2)
+                    // Map
+                    if(this.game.inputs.pointer.type === Pointer.MODE_MOUSE || this.game.inputs.pointer.touches.length >= 2)
                     {
                         this.focusPoint.isTracking = false
                         
@@ -510,6 +511,10 @@ export class View
                         this.focusPoint.position.x -= mapMovement.x
                         this.focusPoint.position.z -= mapMovement.y
                     }
+
+                    // Pinch
+                    this.zoom.baseRatio += this.game.inputs.pointer.pinch.distanceDelta * 0.005
+                    this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
                 }
             }
         })
