@@ -1277,7 +1277,7 @@ export class Projects
 
         // Buttons
         this.game.inputs.touchButtons.clearItems()
-        this.game.inputs.touchButtons.setItems(['previous', 'next', 'open', 'close'])
+        this.game.inputs.touchButtons.addItems(['previous', 'next', 'open', 'close'])
     }
 
     close()
@@ -1328,7 +1328,7 @@ export class Projects
         this.game.physicalVehicle.activate()
             
         // Buttons
-        this.game.inputs.touchButtons.setItems([])
+        this.game.inputs.touchButtons.clearItems([])
     }
 
     previous()
