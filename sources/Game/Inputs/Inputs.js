@@ -3,7 +3,6 @@ import { Game } from '../Game.js'
 import { Gamepad } from './Gamepad.js'
 import { Pointer } from './Pointer.js'
 import Keyboard from './Keyboard.js'
-import { Nipple } from './Nipple.js'
 import { TouchButtons } from './TouchButtons.js'
 import { Wheel } from './Wheel.js'
 
@@ -26,7 +25,6 @@ export class Inputs
         this.setGamepad()
         this.setPointer()
         this.setWheel()
-        // this.setNipple()
         this.setTouchButtons()
 
         this.addActions(actions)
@@ -117,11 +115,6 @@ export class Inputs
             this.updateMode(Inputs.MODE_MOUSEKEYBOARD)
             this.start('Wheel.roll', value, false)
         })
-    }
-
-    setNipple()
-    {
-        this.nipple = new Nipple(this.game.domElement, this.game.canvasElement)
     }
 
     setTouchButtons()
