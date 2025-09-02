@@ -6,10 +6,20 @@ export class Gamepad
     constructor()
     {
         this.events = new Events()
+        
+        this.setType()
+        this.setKeys()
+        this.setJoysticks()
+    }
 
-        /**
-         * Keys
-         */
+    setType()
+    {
+        this.type = 'default'
+        document.documentElement.classList.add(`is-gamepad-${this.type}`)
+    }
+
+    setKeys()
+    {
         this.keys = {}
 
         const keysNames = [
@@ -184,10 +194,10 @@ export class Gamepad
 
             return sanatizedButtons
         }
-        
-        /**
-         * Joysticks
-         */
+    }
+
+    setJoysticks()
+    {
         this.joysticks = {}
 
         this.joysticks.deadZone = 0.2
@@ -210,83 +220,104 @@ export class Gamepad
 
     update()
     {
-        for(const gamepad of navigator.getGamepads())
+        // Get the last non-null gamepad from navigator.getGamepads
+        let gamepad = null
+        for(const _gamepad of navigator.getGamepads())
         {
-            if(gamepad !== null)
+            if(_gamepad !== null)
+                gamepad = _gamepad
+        }
+
+        // Didn't find gamepad
+        if(gamepad === null)
+            return
+    
+        /**
+         * Keys
+         */
+        const buttons = this.keys.sanatizeButtons(gamepad)
+
+        for(let i = 0; i < buttons.length; i++)
+        {
+            const button = buttons[i]
+            const key = this.keys.fromIndex(i, gamepad.mapping)
+
+            if(key)
             {
-                /**
-                * Keys
-                */
-                const buttons = this.keys.sanatizeButtons(gamepad)
+                const oldValue = key.value
+                key.value = button.value
 
-                for(let i = 0; i < buttons.length; i++)
+                if(button.pressed)
                 {
-                    const button = buttons[i]
-                    const key = this.keys.fromIndex(i, gamepad.mapping)
-
-                    if(key)
+                    if(!key.down)
                     {
-                        const oldValue = key.value
-                        key.value = button.value
-
-                        if(button.pressed)
+                        key.down = true
+                        this.events.trigger('down', [ key ])
+                    }
+                    else
+                    {
+                        if(key.value !== oldValue)
                         {
-                            if(!key.down)
-                            {
-                                key.down = true
-                                this.events.trigger('down', [ key ])
-                                console.log('down', key)
-                            }
-                            else
-                            {
-                                if(key.value !== oldValue)
-                                {
-                                    this.events.trigger('change', [ key ])
-                                    console.log('change', key)
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if(key.down)
-                            {
-                                key.down = false
-                                this.events.trigger('up', [ key ])
-                                console.log('up', key)
-                            }
+                            this.events.trigger('change', [ key ])
                         }
                     }
                 }
-                /**
-                 * Joysticks
-                 */
-                for(const joystickName in this.joysticks.items)
+                else
                 {
-                    const joystick = this.joysticks.items[joystickName]
-
-                    let oldX = joystick.x
-                    let oldY = joystick.y
-                    let oldActive = joystick.active
-
-                    joystick.x = gamepad.axes[joystick.indexes[0]]
-                    joystick.safeX = remapClamp(Math.abs(joystick.x), this.joysticks.deadZone, 1, 0, 1) * Math.sign(joystick.x)
-
-                    joystick.y = gamepad.axes[joystick.indexes[1]]
-                    joystick.safeY = remapClamp(Math.abs(joystick.y), this.joysticks.deadZone, 1, 0, 1) * Math.sign(joystick.y)
-
-                    joystick.angle = Math.atan2(joystick.y, joystick.x)
-                    joystick.radius = Math.hypot(joystick.y, joystick.x)
-
-                    joystick.safeRadius = remapClamp(joystick.radius, this.joysticks.deadZone, 1, 0, 1)
-
-                    joystick.active = joystick.radius > this.joysticks.deadZone
-
-                    if(oldActive !== joystick.active || oldX !== joystick.x || oldY !== joystick.y)
+                    if(key.down)
                     {
-                        this.events.trigger('joystickChange', [ joystick ])
+                        key.down = false
+                        this.events.trigger('up', [ key ])
                     }
                 }
             }
         }
+
+        /**
+         * Joysticks
+         */
+        for(const joystickName in this.joysticks.items)
+        {
+            const joystick = this.joysticks.items[joystickName]
+
+            let oldX = joystick.x
+            let oldY = joystick.y
+            let oldActive = joystick.active
+
+            joystick.x = gamepad.axes[joystick.indexes[0]]
+            joystick.safeX = remapClamp(Math.abs(joystick.x), this.joysticks.deadZone, 1, 0, 1) * Math.sign(joystick.x)
+
+            joystick.y = gamepad.axes[joystick.indexes[1]]
+            joystick.safeY = remapClamp(Math.abs(joystick.y), this.joysticks.deadZone, 1, 0, 1) * Math.sign(joystick.y)
+
+            joystick.angle = Math.atan2(joystick.y, joystick.x)
+            joystick.radius = Math.hypot(joystick.y, joystick.x)
+
+            joystick.safeRadius = remapClamp(joystick.radius, this.joysticks.deadZone, 1, 0, 1)
+
+            joystick.active = joystick.radius > this.joysticks.deadZone
+
+            if(oldActive !== joystick.active || oldX !== joystick.x || oldY !== joystick.y)
+            {
+                this.events.trigger('joystickChange', [ joystick ])
+            }
+        }
+
+        /**
+         * Type
+         */
+        let type = 'playstation'
+        
+        if(/xbox/i.test(gamepad.id))
+            type = 'xbox'
+
+        if(type !== this.type)
+        {
+            const oldType = this.type
+            this.type = type
+            document.documentElement.classList.remove(`is-gamepad-${oldType}`)
+            document.documentElement.classList.add(`is-gamepad-${this.type}`)
+        }
+        
     }
 }

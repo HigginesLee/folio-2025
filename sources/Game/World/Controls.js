@@ -9,9 +9,16 @@ export class Controls
         
         this.references = references
 
+        this.setModal()
         this.setInteractiveArea()
+    }
 
-        this.game.modals.items.get('controls').events.on('close', () =>
+    setModal()
+    {
+        this.modal = {}
+        this.modal.instance = this.game.modals.items.get('controls')
+
+        this.modal.instance.events.on('close', () =>
         {
             this.interactiveArea.reveal()
         })

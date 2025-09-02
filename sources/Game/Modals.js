@@ -1,5 +1,6 @@
 import { Events } from './Events.js'
 import { Game } from './Game.js'
+import { Tabs } from './Tabs.js'
 
 export class Modals
 {
@@ -69,9 +70,15 @@ export class Modals
             const item = {
                 name: name,
                 element: element,
+                tabs: null,
                 mainFocus: element.querySelector('.js-main-focus'),
                 events: new Events()
             }
+
+            const tabsElement = element.querySelector('.js-tabs')
+
+            if(tabsElement)
+                item.tabs = new Tabs(tabsElement)
 
             this.items.set(name, item)
 
@@ -127,6 +134,10 @@ export class Modals
                 {
                     this.element.classList.add('is-visible')
 
+                    // Tabs resize
+                    if(item.tabs)
+                        item.tabs.resize()
+
                     // Focus
                     if(item.mainFocus)
                         item.mainFocus.focus()
@@ -164,7 +175,7 @@ export class Modals
         this.items.forEach((item) => 
         {
             // Is preopened
-            if(item.element.classList.contains('is-preopen'))
+            if(typeof item.element.dataset.preopen !== 'undefined')
             {
                 this.open(item.name)               
             }
