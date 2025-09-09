@@ -154,7 +154,10 @@ export class Pointer
             this.pinch.distance = maxDistance
 
             if(this.upcomingTouches.length > this.touches.length)
+            {
+                this.pinch.distanceDelta = 0
                 this.pinch.baseDistance = this.pinch.distance
+            }
         
             const pinchRatio = this.pinch.distance / this.pinch.baseDistance
 
@@ -164,6 +167,12 @@ export class Pointer
                 this.pinch.ratio = pinchRatio
                 this.events.trigger('pinch')
             }
+        }
+        else
+        {
+            this.pinch.baseDistance = 0
+            this.pinch.distance = 0
+            this.pinch.distanceDelta = 0
         }
 
         this.touches = [ ...this.upcomingTouches ]
