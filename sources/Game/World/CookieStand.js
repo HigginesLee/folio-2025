@@ -46,17 +46,10 @@ export class CookieStand
     {
         const windStrength = float(0).toVarying()
 
-        // Color
-        const baseColor = texture(this.game.resources.cookieBannerTexture).rgb.mul(windStrength.mul(4).add(1))
-
-        // Material
-        const material = new MeshDefaultMaterial({
-            colorNode: baseColor,
-            hasWater: false,
-        })
+        const mesh = this.references.get('banner')[0]
 
         // Position
-        material.positionNode = Fn(() =>
+        mesh.material.positionNode = Fn(() =>
         {
             const baseUv = uv()
             const newPosition = positionGeometry.toVar()
@@ -73,9 +66,6 @@ export class CookieStand
 
             return newPosition
         })()
-
-        const mesh = this.references.get('banner')[0]
-        mesh.material = material
     }
 
     setParticles()
