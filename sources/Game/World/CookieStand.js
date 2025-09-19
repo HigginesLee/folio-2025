@@ -96,7 +96,7 @@ export class CookieStand
         const scaleAttribute = instancedArray(scales, 'float').toAttribute()
 
         const material = new THREE.SpriteNodeMaterial()
-        material.colorNode = emissiveMaterial.colorNode
+        material.outputNode = emissiveMaterial.outputNode
 
         const progress = float(0).toVar()
 

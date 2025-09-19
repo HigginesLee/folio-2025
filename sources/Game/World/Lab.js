@@ -1127,7 +1127,7 @@ export class Lab
 
         const baseMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        material.colorNode = baseMaterial.colorNode
+        material.outputNode = baseMaterial.outputNode
         material.positionNode = Fn(() =>
         {
             const newPosition = positionGeometry.toVar()

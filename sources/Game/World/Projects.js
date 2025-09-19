@@ -1203,44 +1203,6 @@ export class Projects
         })
     }
 
-    setFlame()
-    {
-        const mesh = this.references.get('flame')[0]
-        mesh.scale.setScalar(0)
-        mesh.visible = false
-
-        const baseMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
-        const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        material.colorNode = baseMaterial.colorNode
-        material.positionNode = Fn(() =>
-        {
-            const newPosition = positionGeometry.toVar()
-
-            const wave = sin(this.game.ticker.elapsedScaledUniform.mul(0.3).add(uv().y.mul(3)))
-            const strength = uv().y.oneMinus().pow(2).mul(0.06)
-            newPosition.x.addAssign(wave.mul(strength))
-
-            return newPosition
-        })()
-        mesh.material = material
-
-        this.game.dayCycles.events.on('lights', (inInverval) =>
-        {
-            if(inInverval)
-            {
-                mesh.visible = true
-                gsap.to(mesh.scale, { x: 1, y: 1, z: 1, duration: 10, ease: 'power1.out', overwrite: true })
-            }
-            else
-            {
-                gsap.to(mesh.scale, { x: 0, y: 0, z: 0, duration: 10, ease: 'power1.in', overwrite: true, onComplete: () =>
-                {
-                    mesh.visible = false
-                } })
-            }
-        })
-    }
-
     setLabels()
     {
         for(const mesh of this.references.get('label'))
