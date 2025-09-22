@@ -4,6 +4,7 @@ import { blendOverlay, color, float, Fn, hash, linearDepth, max, mix, output, po
 import { remap, remapClamp } from '../utilities/maths.js'
 import { hashBlur } from 'three/examples/jsm/tsl/display/hashBlur.js'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
+import { boxBlur } from 'three/examples/jsm/tsl/display/boxBlur.js'
 
 export class WaterSurface
 {
@@ -272,11 +273,10 @@ export class WaterSurface
 
          this.blurOutputNode = Fn(() =>
          {
-            // const blurStrength = viewportLinearDepth.sub(linearDepth()).mul(10)
-            const blurStrength = 0.01
-            
-            let blurOutput = viewportSharedTexture(screenUV)
-            blurOutput = hashBlur(blurOutput, blurStrength).rgb
+            const blurOutput = boxBlur(viewportSharedTexture(screenUV), {
+				size: 1,
+				separation: 3
+			}).rgb
 
             return vec3(blurOutput)
          })
