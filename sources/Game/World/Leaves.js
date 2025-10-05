@@ -94,8 +94,8 @@ export class Leaves
         const weightBuffer = instancedArray(weightArray, 'float')
 
         // Color buffer
-        const colorA = uniform(color(0x999257))
-        const colorB = uniform(color(0xcc8214))
+        const colorA = uniform(color(0x95513a))// 0x999257
+        const colorB = uniform(color(0xc86847))// 0xcc8214
         const colorNode = Fn(() =>
         {
             const mixStrength = hash(instanceIndex.add(99))

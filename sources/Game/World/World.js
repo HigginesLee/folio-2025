@@ -37,7 +37,7 @@ export class World
         this.grass = new Grass()
         this.windLines = new WindLines()
         this.confetti = new Confetti()
-        // this.leaves = new Leaves()
+        this.leaves = new Leaves()
         this.rainSnow = new RainLines()
         this.lightnings = new Lightnings()
         this.fireballs = new Fireballs()
