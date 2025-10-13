@@ -48,6 +48,7 @@ export default class Circuit
         this.setAirDancers()
         this.setBanners()
         this.setModal()
+        this.setEndModal()
         this.setLeaderboard()
         this.setResetTime()
         this.setPodium()
@@ -146,7 +147,6 @@ export default class Circuit
         this.timer.visible = true
         this.timer.startTime = 0
         this.timer.elapsedTime = 0
-        this.timer.endTime = 0
         this.timer.running = false
         this.timer.group = this.references.get('timer')[0]
         this.timer.group.rotation.y = Math.PI * 0.1
@@ -188,8 +188,8 @@ export default class Circuit
 
             // Texture
             const texture = new THREE.Texture(canvas)
-            texture.minFilter = THREE.NearestFilter
-            texture.magFilter = THREE.NearestFilter
+            texture.minFilter = THREE.LinearFilter
+            texture.magFilter = THREE.LinearFilter
             texture.generateMipmaps = false
 
             this.timer.digits.texture = texture
@@ -203,6 +203,15 @@ export default class Circuit
             const mesh = new THREE.Mesh(geometry, material)
             mesh.scale.setScalar(0.5)
             this.timer.group.add(mesh)
+        }
+
+        const timeToString = (time) =>
+        {
+            const minutes = Math.floor(time / 60)
+            const seconds = Math.floor((time % 60))
+            const milliseconds = Math.floor((time * 1000) % 1000)
+
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`
         }
 
         // Write
@@ -267,11 +276,17 @@ export default class Circuit
         // End
         this.timer.end = () =>
         {
-            this.timer.endTime = this.game.ticker.elapsed
-
             this.timer.running = false
+            this.timer.elapsedTime = this.game.ticker.elapsed - this.timer.startTime
+
+            const formatedTime = timeToString(this.timer.elapsedTime)
+            this.timer.write(formatedTime)
+
+            // End modal
+            this.endModal.timeElement.textContent = formatedTime
         }
 
+        // Update
         this.timer.update = () =>
         {
             // Group > Follow car
@@ -296,16 +311,8 @@ export default class Circuit
             // Digits
             if(this.timer.running)
             {
-                const currentTime = this.game.ticker.elapsed
-                this.timer.elapsedTime = currentTime - this.timer.startTime
-
-                const minutes = Math.floor(this.timer.elapsedTime / 60)
-                const seconds = Math.floor((this.timer.elapsedTime % 60))
-                const milliseconds = Math.floor((this.timer.elapsedTime * 1000) % 1000)
-
-                const digitsString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`
-
-                this.timer.write(digitsString)
+                this.timer.elapsedTime = this.game.ticker.elapsed - this.timer.startTime
+                this.timer.write(timeToString(this.timer.elapsedTime))
             }
         }
     }
@@ -777,10 +784,10 @@ export default class Circuit
     setLeaderboard()
     {
         this.leaderboard = {}
-        const resolution = 512
+        const resolution = 256
 
         // Canvas
-        const font = `700 ${35}px "Nunito"`
+        const font = `700 ${resolution / 14}px "Nunito"`
 
         const canvas = document.createElement('canvas')
         canvas.style.position = 'fixed'
@@ -797,8 +804,8 @@ export default class Circuit
 
         // Texture
         const textTexture = new THREE.Texture(canvas)
-        textTexture.minFilter = THREE.NearestFilter
-        textTexture.magFilter = THREE.NearestFilter
+        textTexture.minFilter = THREE.LinearFilter
+        textTexture.magFilter = THREE.LinearFilter
         textTexture.generateMipmaps = false
 
         // Digits
@@ -900,7 +907,7 @@ export default class Circuit
         const height = 32
 
         // Canvas
-        const font = `700 ${35 / 2}px "Nunito"`
+        const font = `700 ${height / 1.75}px "Nunito"`
 
         const canvas = document.createElement('canvas')
         canvas.style.position = 'fixed'
@@ -917,8 +924,8 @@ export default class Circuit
 
         // Texture
         const textTexture = new THREE.Texture(canvas)
-        textTexture.minFilter = THREE.NearestFilter
-        textTexture.magFilter = THREE.NearestFilter
+        textTexture.minFilter = THREE.LinearFilter
+        textTexture.magFilter = THREE.LinearFilter
         textTexture.generateMipmaps = false
 
         // Material
@@ -1120,6 +1127,24 @@ export default class Circuit
             if(this.resetTime.finalFormatedTime)
                 this.modal.resetTimeElement.textContent = this.resetTime.finalFormatedTime
         })
+    }
+
+    setEndModal()
+    {
+        this.endModal = {}
+        this.endModal.instance = this.game.modals.items.get('circuit-end')
+        this.endModal.timeElement = this.endModal.instance.element.querySelector('.js-time')
+        
+        // Restart button
+        const restartElement = this.endModal.instance.element.querySelector('.js-button-restart')
+        restartElement.addEventListener('click', (event) =>
+        {
+            event.preventDefault()
+
+            this.restart()
+            this.game.modals.close()
+        })
+
     }
 
     restart()
@@ -1343,6 +1368,11 @@ export default class Circuit
                 // Podium => Show
                 if(!forced)
                     this.podium.show()
+
+                gsap.delayedCall(1, () =>
+                {
+                    this.game.modals.open('circuit-end')
+                })
 
                 // Overlay > Hide
                 this.game.overlay.hide(() =>

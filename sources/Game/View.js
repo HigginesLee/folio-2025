@@ -259,8 +259,8 @@ export class View
         this.zoom.toggleLast = -1
 
         this.game.inputs.addActions([
-            { name: 'zoom',    categories: [ 'wandering' ], keys: [ 'Wheel.roll' ] },
-            { name: 'zoomToggle',  categories: [ 'wandering' ], keys: [ 'Gamepad.r3' ] },
+            { name: 'zoom',    categories: [ 'wandering', 'racing' ], keys: [ 'Wheel.roll' ] },
+            { name: 'zoomToggle',  categories: [ 'wandering', 'racing' ], keys: [ 'Gamepad.r3' ] },
         ])
 
         this.game.inputs.events.on('zoom', (action) =>

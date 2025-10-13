@@ -272,7 +272,7 @@
                             - Max 30 characters
                         </p>
                         <p class="offline-element text text-danger">
-                            <img src="ui/warning.svg" alt="" class="icon"> Server is currently offline
+                            <img src="ui/warning.svg" alt="" class="icon"> Server currently offline
                         </p>
                         <form class="js-input-group input-group is-message" action="#">
                             <div class="js-input-flag input-flag">
@@ -327,7 +327,7 @@
                         </button>
                         
                         <p class="offline-element text text-danger">
-                            <img src="ui/warning.svg" alt="" class="icon"> Server is currently offline. Scores can't be saved.
+                            <img src="ui/warning.svg" alt="" class="icon"> Server currently offline. Scores can't be saved.
                         </p>
 
                         <div class="online-element leaderboards">
@@ -426,7 +426,7 @@
             </div>
 
             <!-- Circuit end -->
-            <div class="js-modal modal circuit-end is-simple" data-name="circuit-end">
+            <div class="js-modal modal circuit-end is-simple" data-name="circuit-end" data-preopen>
                 <div class="container">
                     <div class="content">
                         <button class="js-close js-main-focus close">
@@ -436,12 +436,16 @@
 
                         <div class="your-time">
                             Your time
-                            <br /><span class="value">00:00:000</span>
+                            <br /><span class="js-time value">00:00:000</span>
                         </div>
+
+                        <p class="offline-element text text-danger">
+                            <img src="ui/warning.svg" alt="" class="icon"> Server currently offline. Scores can't be saved.
+                        </p>
 
                         <div class="horizontal-group">
                         
-                            <form class="js-input-group input-group is-name-tag" action="#">
+                            <form class="js-input-group input-group is-name-tag online-element" action="#">
                                 <div class="js-input-flag input-flag">
                                     <div class="js-flag-button flag-button">
                                         <img class="js-flag flag" src="ui/flags/fr.png" loading="lazy">

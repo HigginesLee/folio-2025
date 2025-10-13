@@ -17,6 +17,7 @@ export class Modals
         this.current = null
         this.pending = null
         this.default = null
+        this.events = new Events()
 
         this.setClose()
         this.setItems()
@@ -33,11 +34,13 @@ export class Modals
         if(this.state === Modals.OPENING)
         {
             this.state = Modals.OPEN
+            this.events.trigger('opened')
             this.current.events.trigger('opened')
         }
         else if(this.state === Modals.CLOSING)
         {
             this.state = Modals.CLOSED
+            this.events.trigger('closed')
             this.current.events.trigger('closed')
             this.current.element.classList.remove('is-displayed')
             this.current = null
@@ -151,6 +154,7 @@ export class Modals
             this.game.inputs.filters.add('modal')
 
             item.isOpen = true
+            this.events.trigger('open')
             item.events.trigger('open')
         }
 
@@ -164,9 +168,8 @@ export class Modals
         this.element.classList.remove('is-visible')
 
         this.state = Modals.CLOSING
-        this.game.inputs.filters.clear()
-        this.game.inputs.filters.add('wandering')
         this.current.isOpen = false
+        this.events.trigger('close')
         this.current.events.trigger('close')
     }
 

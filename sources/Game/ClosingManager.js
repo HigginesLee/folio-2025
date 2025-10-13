@@ -15,6 +15,7 @@ export class ClosingManager
             { name: 'pause', categories: [ 'modal', 'racing', 'cinematic', 'wandering' ], keys: [ 'Keyboard.KeyP', 'Gamepad.start' ] }
         ])
         
+        // Close input => Go through everything that can be closed
         this.game.inputs.events.on('close', (action) =>
         {
             if(action.active)
@@ -44,7 +45,8 @@ export class ClosingManager
                     this.game.modals.open('intro')
             }
         })
-        
+
+        // Pause input => Close modal or open intro
         this.game.inputs.events.on('pause', (action) =>
         {
             if(action.active)
@@ -57,6 +59,25 @@ export class ClosingManager
                 {
                     this.game.modals.open('intro')
                 }
+            }
+        })
+
+        // On modal close => Go to wandering or racing
+        this.game.modals.events.on('close', () =>
+        {
+            this.game.inputs.filters.clear()
+
+            if(
+                this.game.world.areas?.circuit?.state === Circuit.STATE_RUNNING ||
+                this.game.world.areas?.circuit?.state === Circuit.STATE_STARTING ||
+                this.game.world.areas?.circuit?.state === Circuit.STATE_ENDING
+            )
+            {
+                this.game.inputs.filters.add('racing')
+            }
+            else
+            {
+                this.game.inputs.filters.add('wandering')
             }
         })
     }
