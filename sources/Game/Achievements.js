@@ -13,6 +13,8 @@ export class Achievements
         this.setItems()
         this.setGlobalProgress()
         this.setReset()
+        
+        this.checkDependents()
     }
 
     setStorage()
@@ -121,19 +123,13 @@ export class Achievements
                     // Achieved
                     if(achievement.progress === achievement.total)
                     {
-                        achievement.achieved = true
-                        itemElement.classList.add('is-achieved')
+                        achievement.achieve(_fromLocal)
 
                         if(!_fromLocal)
                         {
-                            // Confetti
-                            if(this.game.world.confetti)
-                            {
-                                this.game.world.confetti.pop(this.game.player.position.clone())
-                                this.game.world.confetti.pop(this.game.player.position.clone().add(new THREE.Vector3(1, -1, 1.5)))
-                                this.game.world.confetti.pop(this.game.player.position.clone().add(new THREE.Vector3(1, -1, -1.5)))
-                            }
+                            this.checkDependents()
                         }
+
                     }
 
                     // Storage
@@ -149,6 +145,24 @@ export class Achievements
             achievement.addProgress = () =>
             {
                 achievement.setProgress(achievement.progress + 1)
+            }
+
+            // Achive
+            achievement.achieve = (_silent = true) =>
+            {
+                achievement.achieved = true
+                itemElement.classList.add('is-achieved')
+
+                if(!_silent)
+                {
+                    // Confetti
+                    if(this.game.world.confetti)
+                    {
+                        this.game.world.confetti.pop(this.game.player.position.clone())
+                        this.game.world.confetti.pop(this.game.player.position.clone().add(new THREE.Vector3(1, -1, 1.5)))
+                        this.game.world.confetti.pop(this.game.player.position.clone().add(new THREE.Vector3(1, -1, -1.5)))
+                    }
+                }
             }
 
             // Reset
@@ -228,6 +242,25 @@ export class Achievements
 
         if(achievement)
             achievement.addProgress()
+    }
+
+    checkDependents()
+    {
+        if(
+            this.items.get('projectsEnter').achieved &&
+            this.items.get('labEnter').achieved &&
+            this.items.get('careerEnter').achieved &&
+            this.items.get('socialEnter').achieved &&
+            this.items.get('cookieEnter').achieved &&
+            this.items.get('bowlingEnter').achieved &&
+            this.items.get('circuitEnter').achieved &&
+            this.items.get('toiletEnter').achieved &&
+            this.items.get('altarEnter').achieved &&
+            this.items.get('behindTheSceneEnter').achieved
+        )
+        {
+            this.setProgress('allEnter', 1)
+        }
     }
 
     reset()

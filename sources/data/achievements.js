@@ -67,6 +67,12 @@ export default
         1
     ],
     [
+        'allEnter',
+        'Traveler',
+        'Vist all areas.',
+        1
+    ],
+    [
         'cookie',
         'Making some dough',
         'Accept <strong>10</strong> cookies.',
