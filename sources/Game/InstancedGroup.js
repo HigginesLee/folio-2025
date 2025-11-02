@@ -10,7 +10,7 @@ export class InstancedGroup
         this.references = references
         this.group = group
         this.count = this.references.length
-
+        
         this.setMeshes()
 
         if(autoUpdate)

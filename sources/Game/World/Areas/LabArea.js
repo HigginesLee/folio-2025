@@ -1153,9 +1153,9 @@ export class LabArea extends Area
             mesh.material = material
         }
 
-        this.game.dayCycles.events.on('lights', (inInverval) =>
+        this.game.dayCycles.events.on('lights', (inInterval) =>
         {
-            if(inInverval)
+            if(inInterval)
             {
                 for(const mesh of meshes)
                 {

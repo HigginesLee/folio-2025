@@ -24,6 +24,7 @@ import { ExplosiveCrates } from './ExplosiveCrates.js'
 import { RainLines } from './RainLines.js'
 import { Confetti } from './Confetti.js'
 import { IntroLoader } from './IntroLoader.js'
+import { PoleLights } from './PoleLights.js'
 
 export class World
 {
@@ -68,6 +69,7 @@ export class World
             this.flowers = new Flowers()
             this.bricks = new Bricks()
             this.explosiveCrates = new ExplosiveCrates()
+            this.poleLights = new PoleLights()
             this.areas = new Areas()
         }
         else if(step === 2)

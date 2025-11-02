@@ -1,11 +1,12 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
+import { InstancedGroup } from '../InstancedGroup.js'
 import { hash, instancedArray, instanceIndex, sin, uniform, vec3 } from 'three/tsl'
 import gsap from 'gsap'
 
 export class PoleLights
 {
-    constructor(references)
+    constructor()
     {
         this.game = Game.getInstance()
 
@@ -18,9 +19,27 @@ export class PoleLights
             })
         }
 
-        this.glass = references.get('glass')[0]
-        this.references = references.get('poleLights')
+        const basePoleLight = this.game.resources.poleLightsModel.scene.children[0]
 
+        // Reset children's positions of the base element
+        for(const child of basePoleLight.children)
+        {
+            child.name = child.name.replace(/[0-9]+$/i, '')
+            child.position.sub(basePoleLight.position)
+            child.castShadow = true
+            child.receiveShadow = true
+        }
+
+        // Update materials 
+        this.game.materials.updateObject(basePoleLight)
+
+        // Create instanced group
+        this.references = InstancedGroup.getReferencesFromChildren(this.game.resources.poleLightsModel.scene.children)
+        this.instancedGroup = new InstancedGroup(this.references, basePoleLight, false)
+        
+
+        this.glass = this.instancedGroup.meshes.find(mesh => mesh.instance.name === 'glass').instance
+        
         this.setEmissives()
         this.setFireflies()
         this.setSwitchInterval()
@@ -80,9 +99,11 @@ export class PoleLights
 
     setSwitchInterval()
     {
-        this.game.dayCycles.events.on('lights', (inInverval) =>
+
+        const intervalChange = (inInterval) =>
         {
-            if(inInverval)
+            console.log(inInterval)
+            if(inInterval)
             {
                 this.glass.material = this.emissive.onMaterial
 
@@ -94,6 +115,9 @@ export class PoleLights
 
                 gsap.to(this.firefliesScale, { value: 0, duration: 5, overwrite: true })
             }
-        })
+        }
+
+        this.game.dayCycles.events.on('lights', intervalChange)
+        intervalChange(this.game.dayCycles.intervalEvents.get('lights').inInterval)
     }
 }

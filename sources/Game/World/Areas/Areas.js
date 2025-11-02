@@ -1,5 +1,4 @@
 import { Game } from '../../Game.js'
-// import { PoleLights } from '../PoleLights.js'
 import { AltarArea } from './AltarArea.js'
 import { CookieStandArea } from './CookieStandArea.js'
 import { BonfireArea } from './BonfireArea.js'
@@ -64,10 +63,6 @@ export class Areas
         if(altarReferences.size)
             this.altar = new AltarArea(altarReferences)
 
-        // const poleLightsReferences = this.references.getStartingWith('poleLights')
-        // if(poleLightsReferences.size)
-        //     this.poleLights = new PoleLights(poleLightsReferences)
-            
         const cookieReferences = this.references.getStartingWith('cookie')
         if(cookieReferences.size)
             this.cookieStand = new CookieStandArea(cookieReferences)

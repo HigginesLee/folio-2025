@@ -170,27 +170,27 @@ export class Cycles
         {
             const inInterval = newProgress > intervalEvent.startProgress && newProgress < intervalEvent.endProgress
 
-            if(inInterval && !intervalEvent.inInverval)
+            if(inInterval && !intervalEvent.inInterval)
             {
-                intervalEvent.inInverval = true
+                intervalEvent.inInterval = true
                 if(firstFrame)
                     this.game.ticker.wait(1, () =>
                     {
-                        this.events.trigger(intervalEvent.name, [ intervalEvent.inInverval ])
+                        this.events.trigger(intervalEvent.name, [ intervalEvent.inInterval ])
                     })
                 else
-                    this.events.trigger(intervalEvent.name, [ intervalEvent.inInverval ])
+                    this.events.trigger(intervalEvent.name, [ intervalEvent.inInterval ])
             }
-            if(!inInterval && intervalEvent.inInverval)
+            if(!inInterval && intervalEvent.inInterval)
             {
-                intervalEvent.inInverval = false
+                intervalEvent.inInterval = false
                 if(firstFrame)
                     this.game.ticker.wait(1, () =>
                     {
-                        this.events.trigger(intervalEvent.name, [ intervalEvent.inInverval ])
+                        this.events.trigger(intervalEvent.name, [ intervalEvent.inInterval ])
                     })
                 else
-                    this.events.trigger(intervalEvent.name, [ intervalEvent.inInverval ])
+                    this.events.trigger(intervalEvent.name, [ intervalEvent.inInterval ])
             }
         })
 
@@ -307,6 +307,6 @@ export class Cycles
 
     addIntervalEvent(name, startProgress, endProgress)
     {
-        this.intervalEvents.set(name, { name, startProgress, endProgress, inInverval: false })
+        this.intervalEvents.set(name, { name, startProgress, endProgress, inInterval: false })
     }
 }

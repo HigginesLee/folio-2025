@@ -132,7 +132,7 @@ export class VisualVehicle
         
         // Flames
         {
-            const material = this.paints.choices.white.clone()
+            const material = this.paints.choices.red.clone()
             const baseOutput = material.outputNode
             const colorA = uniform(color('#ff9c20'))
             const colorB = uniform(color('#ff0000'))
