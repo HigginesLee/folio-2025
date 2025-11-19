@@ -129,7 +129,7 @@ export class BehindTheSceneArea extends Area
             () =>
             {
                 this.game.inputs.interactiveButtons.clearItems()
-                this.game.modals.open('behindTheScene')
+                this.game.menu.open('behindTheScene')
                 this.interactivePoint.hide()
             },
             () =>
@@ -146,7 +146,7 @@ export class BehindTheSceneArea extends Area
             }
         )
 
-        this.game.modals.items.get('behindTheScene').events.on('close', () =>
+        this.game.menu.items.get('behindTheScene').events.on('close', () =>
         {
             this.interactivePoint.reveal()
         })

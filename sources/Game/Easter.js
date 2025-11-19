@@ -179,7 +179,7 @@ export class Easter
 
             if(this.eggs.allCaught)
             {
-                this.game.modals.open('easter-end')
+                this.game.menu.open('easter-end')
 
                 return true
             }

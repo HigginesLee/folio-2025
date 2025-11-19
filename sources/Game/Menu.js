@@ -75,13 +75,17 @@ export class Menu
             const item = {}
             item.navigationElement = navigationElement
             item.name = item.navigationElement.dataset.name
-            item.previewElement = previewElements.find(element => element.classList.contains(item.name))
-            item.contentElement = contentElements.find(element => element.classList.contains(item.name))
+            item.previewElement = previewElements.find(element => element.classList.contains(`${item.name}-preview`))
+            item.contentElement = contentElements.find(element => element.classList.contains(`${item.name}-content`))
             item.isOpen = false
             item.events = new Events()
 
-            // TODO: setup tabs
-            
+            // Tabs
+            const tabsElement = item.contentElement.querySelector('.js-tabs')
+
+            if(tabsElement)
+                item.tabs = new Tabs(tabsElement)
+
             // TODO: setup scroller
             
             // TODO: setup default (?)
@@ -94,6 +98,9 @@ export class Menu
             })
 
             this.items.set(item.name, item)
+
+            if(this.default === null)
+                this.default = item
         }
     }
 
@@ -117,9 +124,19 @@ export class Menu
         })
     }
 
-    open(name = 'intro')
+    open(name = null)
     {
-        const item = this.items.get(name)
+        let _name = name
+
+        if(_name === null)
+        {
+            if(this.current)
+                _name = this.current.name
+            else
+                _name = this.default.name
+        }
+
+        const item = this.items.get(_name)
 
         // Not found
         if(!item)
@@ -166,7 +183,7 @@ export class Menu
 
         // Input filters
         this.game.inputs.filters.clear()
-        this.game.inputs.filters.add('modal') // TODO: change to "menu"
+        this.game.inputs.filters.add('menu') // TODO: change to "menu"
 
         // Events
         this.events.trigger('open')

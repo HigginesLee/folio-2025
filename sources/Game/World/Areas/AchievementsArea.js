@@ -298,7 +298,7 @@ export class AchievementsArea extends Area
             () =>
             {
                 this.game.inputs.interactiveButtons.clearItems()
-                this.game.modals.open('achievements')
+                this.game.menu.open('achievements')
                 this.interactivePoint.hide()
             },
             () =>
@@ -315,7 +315,7 @@ export class AchievementsArea extends Area
             }
         )
 
-        this.game.modals.items.get('achievements').events.on('close', () =>
+        this.game.menu.items.get('achievements').events.on('close', () =>
         {
             this.interactivePoint.reveal()
         })

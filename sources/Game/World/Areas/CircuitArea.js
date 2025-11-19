@@ -48,7 +48,7 @@ export class CircuitArea extends Area
         this.setBounds()
         this.setAirDancers()
         this.setBanners()
-        this.setModal()
+        this.setMenu()
         this.setEndModal()
         this.setLeaderboard()
         this.setResetTime()
@@ -966,7 +966,7 @@ export class CircuitArea extends Area
                     const countryCode = score[1]
                     if(countryCode)
                     {                    
-                        const country = this.modal.inputFlag.countries.get(countryCode)
+                        const country = this.menu.inputFlag.countries.get(countryCode)
 
                         if(country)
                         {
@@ -1098,8 +1098,8 @@ export class CircuitArea extends Area
                 this.resetTime.finalFormatedTime = formatedTime === '' ? 'now' : `in ${formatedTime}`
                 this.resetTime.draw(this.resetTime.finalFormatedTime)
 
-                if(this.modal.instance.isOpen)
-                    this.modal.resetTimeElement.textContent = this.resetTime.finalFormatedTime
+                if(this.menu.instance.isOpen)
+                    this.menu.resetTimeElement.textContent = this.resetTime.finalFormatedTime
             }
 
             this.resetTime.lastTimeToReset = timeToReset
@@ -1177,31 +1177,31 @@ export class CircuitArea extends Area
         this.podium.hide()
     }
 
-    setModal()
+    setMenu()
     {
-        this.modal = {}
-        this.modal.instance = this.game.modals.items.get('circuit')
-        this.modal.resetTimeElement = this.modal.instance.element.querySelector('.js-reset-time')
-        this.modal.leaderboardContainerElement = this.modal.instance.element.querySelector('.js-leaderboard-container')
-        this.modal.leaderboardElement = this.modal.leaderboardContainerElement.querySelector('.js-leaderboard tbody')
-        this.modal.leaderboardNeedsUpdate = false
+        this.menu = {}
+        this.menu.instance = this.game.menu.items.get('circuit')
+        this.menu.resetTimeElement = this.menu.instance.contentElement.querySelector('.js-reset-time')
+        this.menu.leaderboardContainerElement = this.menu.instance.contentElement.querySelector('.js-leaderboard-container')
+        this.menu.leaderboardElement = this.menu.leaderboardContainerElement.querySelector('.js-leaderboard tbody')
+        this.menu.leaderboardNeedsUpdate = false
 
-        this.modal.instance.events.on('open', () =>
+        this.menu.instance.events.on('open', () =>
         {
-            if(this.modal.leaderboardNeedsUpdate)
-                this.modal.updateLeaderboard(this.modal.leaderboardNeedsUpdate)
+            if(this.menu.leaderboardNeedsUpdate)
+                this.menu.updateLeaderboard(this.menu.leaderboardNeedsUpdate)
         })
 
-        
-        this.modal.updateLeaderboard = (scores = null) =>
+        this.menu.updateLeaderboard = (scores = null) =>
         {
-            // Modal not open => Set flag
-            if(!this.modal.instance.isOpen)
+            // TODO: Probably should test both menu open AND instance open
+            // Menu not open => Set flag
+            if(!this.menu.instance.isOpen)
             {
-                this.modal.leaderboardNeedsUpdate = scores
+                this.menu.leaderboardNeedsUpdate = scores
             }
 
-            // Modal open => Update content
+            // Menu open => Update content
             else
             {
                 let html = ''
@@ -1210,7 +1210,7 @@ export class CircuitArea extends Area
                 for(const score of scores)
                 {
                     let flag = ''
-                    const country = this.modal.inputFlag.countries.get(score[1])
+                    const country = this.menu.inputFlag.countries.get(score[1])
 
                     if(country)
                         flag = /* html */`<img width="27" height="18" src="${country.imageUrl}" loading="lazy">`
@@ -1227,29 +1227,29 @@ export class CircuitArea extends Area
                     rank++
                 }
 
-                this.modal.leaderboardElement.innerHTML = html
+                this.menu.leaderboardElement.innerHTML = html
 
                 if(scores.length)
-                    this.modal.leaderboardContainerElement.classList.remove('has-no-score')
+                    this.menu.leaderboardContainerElement.classList.remove('has-no-score')
                 else
-                    this.modal.leaderboardContainerElement.classList.add('has-no-score')
+                    this.menu.leaderboardContainerElement.classList.add('has-no-score')
 
-                this.modal.leaderboardNeedsUpdate = false
+                this.menu.leaderboardNeedsUpdate = false
             }
         }
         
         // Restart button
-        const restartElement = this.modal.instance.element.querySelector('.js-button-restart')
+        const restartElement = this.menu.instance.contentElement.querySelector('.js-button-restart')
         restartElement.addEventListener('click', (event) =>
         {
             event.preventDefault()
 
             this.restart()
-            this.game.modals.close()
+            this.game.menu.close()
         })
 
         // End button
-        const endElement = this.modal.instance.element.querySelector('.js-button-end')
+        const endElement = this.menu.instance.contentElement.querySelector('.js-button-end')
         endElement.addEventListener('click', (event) =>
         {
             event.preventDefault()
@@ -1257,23 +1257,23 @@ export class CircuitArea extends Area
             if(this.state === CircuitArea.STATE_RUNNING || this.state === CircuitArea.STATE_STARTING)
                 this.finish(true)
             
-            this.game.modals.close()
+            this.game.menu.close()
         })
 
         // Controls button
-        const controlsElement = this.modal.instance.element.querySelector('.js-button-controls')
+        const controlsElement = this.menu.instance.contentElement.querySelector('.js-button-controls')
         controlsElement.addEventListener('click', (event) =>
         {
             event.preventDefault()
             
-            this.game.modals.open('controls')
+            this.game.menu.open('controls')
         })
 
         // Reset time
-        this.modal.instance.events.on('open', () =>
+        this.menu.instance.events.on('open', () =>
         {
             if(this.resetTime.finalFormatedTime)
-                this.modal.resetTimeElement.textContent = this.resetTime.finalFormatedTime
+                this.menu.resetTimeElement.textContent = this.resetTime.finalFormatedTime
         })
     }
 
@@ -1293,8 +1293,8 @@ export class CircuitArea extends Area
             this.game.modals.close()
         })
 
-        this.modal.inputGroup = this.endModal.instance.element.querySelector('.js-input-group')
-        this.modal.input = this.modal.inputGroup.querySelector('.js-input')
+        this.menu.inputGroup = this.endModal.instance.element.querySelector('.js-input-group')
+        this.menu.input = this.menu.inputGroup.querySelector('.js-input')
 
         const sanatize = (text = '', trim = false, limit = false, stripNonLetter = false, toUpper = false) =>
         {
@@ -1316,14 +1316,14 @@ export class CircuitArea extends Area
 
         const submit = () =>
         {
-            const sanatized = sanatize(this.modal.input.value, true, true, true, true)
+            const sanatized = sanatize(this.menu.input.value, true, true, true, true)
             
             if(sanatized.length === 3 && this.game.server.connected)
             {
                 // Insert
                 this.game.server.send({
                     type: 'circuitInsert',
-                    countryCode: this.modal.inputFlag.country ? this.modal.inputFlag.country.code : '',
+                    countryCode: this.menu.inputFlag.country ? this.menu.inputFlag.country.code : '',
                     tag: sanatized,
                     duration: Math.round(this.timer.elapsedTime * 1000),
                     checkpointTimings: this.checkpoints.timings
@@ -1336,31 +1336,31 @@ export class CircuitArea extends Area
 
         const updateGroup = () =>
         {
-            if(this.modal.input.value.length === 3 && this.game.server.connected)
-                this.modal.inputGroup.classList.add('is-valide')
+            if(this.menu.input.value.length === 3 && this.game.server.connected)
+                this.menu.inputGroup.classList.add('is-valide')
             else
-                this.modal.inputGroup.classList.remove('is-valide')
+                this.menu.inputGroup.classList.remove('is-valide')
         }
 
-        this.modal.input.addEventListener('input', () =>
+        this.menu.input.addEventListener('input', () =>
         {
-            const sanatized = sanatize(this.modal.input.value, false, true, true, true)
-            this.modal.input.value = sanatized
+            const sanatized = sanatize(this.menu.input.value, false, true, true, true)
+            this.menu.input.value = sanatized
             updateGroup()
         })
 
-        this.modal.inputGroup.addEventListener('submit', (event) =>
+        this.menu.inputGroup.addEventListener('submit', (event) =>
         {
             event.preventDefault()
 
             submit()
         })
 
-        this.modal.instance.events.on('closed', () =>
+        this.menu.instance.events.on('closed', () =>
         {
-            this.modal.input.value = ''
+            this.menu.input.value = ''
             updateGroup()
-            this.modal.inputFlag.close()
+            this.menu.inputFlag.close()
         })
             
         this.game.server.events.on('connected', () =>
@@ -1376,7 +1376,7 @@ export class CircuitArea extends Area
         /**
          * Flag
          */
-        this.modal.inputFlag = new InputFlag(this.modal.inputGroup.querySelector('.js-input-flag'))
+        this.menu.inputFlag = new InputFlag(this.menu.inputGroup.querySelector('.js-input-flag'))
     }
 
     restart()
@@ -1494,12 +1494,12 @@ export class CircuitArea extends Area
             {
                 this.resetTime.activate(data.circuitResetTime)
                 this.leaderboard.draw(data.circuitLeaderboard)
-                this.modal.updateLeaderboard(data.circuitLeaderboard)
+                this.menu.updateLeaderboard(data.circuitLeaderboard)
             }
             else if(data.type === 'circuitUpdate')
             {
                 this.leaderboard.draw(data.circuitLeaderboard)
-                this.modal.updateLeaderboard(data.circuitLeaderboard)
+                this.menu.updateLeaderboard(data.circuitLeaderboard)
             }
         })
 
@@ -1508,7 +1508,7 @@ export class CircuitArea extends Area
         {
             this.resetTime.deactivate()
             this.leaderboard.draw(null)
-            this.modal.updateLeaderboard(null)
+            this.menu.updateLeaderboard(null)
         })
 
         // Message already received
@@ -1516,7 +1516,7 @@ export class CircuitArea extends Area
         {
             this.resetTime.activate(this.game.server.initData.circuitResetTime)
             this.leaderboard.draw(this.game.server.initData.circuitLeaderboard)
-            this.modal.updateLeaderboard(this.game.server.initData.circuitLeaderboard)
+            this.menu.updateLeaderboard(this.game.server.initData.circuitLeaderboard)
         }
     }
 

@@ -1,4 +1,5 @@
 import { Game } from './Game.js'
+import { Menu } from './Menu.js'
 import { Modals } from './Modals.js'
 import { CircuitArea } from './World/Areas/CircuitArea.js'
 import { LabArea } from './World/Areas/LabArea.js'
@@ -20,17 +21,22 @@ export class ClosingManager
         {
             if(action.active)
             {
+                // TODO: add circuit end inputFlag
                 // Whispers flag select => Close
-                if(this.game.world.whispers?.modal.inputFlag.isOpen)
-                    this.game.world.whispers.modal.inputFlag.close()
+                if(this.game.world.whispers?.menu.inputFlag.isOpen)
+                    this.game.world.whispers.menu.inputFlag.close()
                 
                 // Modal open => Close
                 else if(this.game.modals.state === Modals.OPEN)
                     this.game.modals.close()
+                
+                // Menu open => Close
+                else if(this.game.menu.state === Menu.OPEN)
+                    this.game.menu.close()
 
                 // Circuit running
                 else if(this.game.world.areas?.circuit?.state === CircuitArea.STATE_RUNNING || this.game.world.areas?.circuit?.state === CircuitArea.STATE_STARTING)
-                    this.game.modals.open('circuit')
+                    this.game.menu.open('circuit')
 
                 // Projects => Close
                 else if(this.game.world.areas?.projects?.state === ProjectsArea.STATE_OPEN)
@@ -42,28 +48,45 @@ export class ClosingManager
 
                 // Nothing opened and used the keyboard Escape key => Open default modal
                 else if(action.activeKeys.has('Keyboard.Escape'))
-                    this.game.modals.open('intro')
+                    this.game.menu.open()
             }
         })
 
-        // Pause input => Close modal or open intro
+        // Pause input => Close menu or open menu  intro
         this.game.inputs.events.on('pause', (action) =>
         {
             if(action.active)
             {
-                if((this.game.modals.state === Modals.OPEN || this.game.modals.state === Modals.OPENING))
+                if(this.game.menu.state === Menu.OPEN || this.game.menu.state === Menu.OPENING)
                 {
-                    this.game.modals.close()
+                    this.game.menu.close()
                 }
                 else
                 {
-                    this.game.modals.open('intro')
+                    this.game.menu.open('intro')
                 }
             }
         })
 
+        // TODO: Handle if both menu and modal are open (make it so it never happens)
+        // TODO: Simplify bellow
+
+        // On modal open => Close menu
+        this.game.modals.events.on('open', () =>
+        {
+            if(this.game.menu.state === Menu.OPEN || this.game.menu.state === Menu.OPENING)
+                this.game.menu.close()
+        })
+
+        // On menu open => Close modal
+        this.game.menu.events.on('open', () =>
+        {
+            if(this.game.modals.state === Modals.OPEN || this.game.modals.state === Modals.OPENING)
+                this.game.modals.close()
+        })
+
         // On modal close => Go to wandering or racing
-        this.game.modals.events.on('close', () =>
+        const modalMenuCloseCallback = () =>
         {
             this.game.inputs.filters.clear()
 
@@ -79,6 +102,8 @@ export class ClosingManager
             {
                 this.game.inputs.filters.add('wandering')
             }
-        })
+        }
+        this.game.modals.events.on('close', modalMenuCloseCallback)
+        this.game.menu.events.on('close', modalMenuCloseCallback)
     }
 }

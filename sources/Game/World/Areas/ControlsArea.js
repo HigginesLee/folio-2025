@@ -1,7 +1,6 @@
 import { Game } from '../../Game.js'
 import { Inputs } from '../../Inputs/Inputs.js'
 import { InteractivePoints } from '../../InteractivePoints.js'
-import { Modals } from '../../Modals.js'
 import { Area } from './Area.js'
 
 export class ControlsArea extends Area
@@ -10,28 +9,28 @@ export class ControlsArea extends Area
     {
         super(references)
 
-        this.setModal()
+        this.setMenu()
         this.setInteractivePoint()
     }
 
-    setModal()
+    setMenu()
     {
-        this.modal = {}
-        this.modal.instance = this.game.modals.items.get('controls')
+        this.menu = {}
+        this.menu.instance = this.game.menu.items.get('controls')
 
-        this.modal.instance.events.on('close', () =>
+        this.menu.instance.events.on('close', () =>
         {
             this.interactivePoint.reveal()
         })
 
-        this.modal.instance.events.on('open', () =>
+        this.menu.instance.events.on('open', () =>
         {
             if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
-                this.modal.instance.tabs.goTo('gamepad')
+                this.menu.instance.tabs.goTo('gamepad')
             else if(this.game.inputs.mode === Inputs.MODE_MOUSEKEYBOARD)
-                this.modal.instance.tabs.goTo('mouse-keyboard')
+                this.menu.instance.tabs.goTo('mouse-keyboard')
             else if(this.game.inputs.mode === Inputs.MODE_TOUCH)
-                this.modal.instance.tabs.goTo('touch')
+                this.menu.instance.tabs.goTo('touch')
         })
     }
 
@@ -45,7 +44,7 @@ export class ControlsArea extends Area
             () =>
             {
                 this.game.inputs.interactiveButtons.clearItems()
-                this.game.modals.open('controls')
+                this.game.menu.open('controls')
                 this.interactivePoint.hide()
             },
             () =>

@@ -1,0 +1,57 @@
+.menu .contents .controls-content
+    .list
+        display flex
+        align-items center
+        justify-content center
+
+        .column
+            &:first-child
+                text-align right
+                padding-right 15px
+
+        .list-item
+            white-space nowrap
+
+            &.is-gamepad-button
+                display none
+
+                &.is-playstation
+                    .is-gamepad-default &
+                    .is-gamepad-playstation &
+                        display block
+
+                &.is-xbox
+                    .is-gamepad-xbox &
+                        display block
+
+        .gamepad-button
+            display inline-block
+            background-size cover
+            vertical-align middle
+
+            @media only screen and (max-width 520px)
+                transform scale(0.8, 0.8)
+
+            @media only screen and (max-width 420px)
+                transform scale(0.7, 0.7)
+
+            &.circle
+                width 15px
+                height 15px
+                background-image url('../ui/controls/gamepad-circle.png')
+
+            &.triangle
+                width 16px
+                height 15px
+                background-image url('../ui/controls/gamepad-triangle.png')
+
+            &.square
+                width 15px
+                height 15px
+                background-image url('../ui/controls/gamepad-square.png')
+
+            &.cross
+                width 14px
+                height 13px
+                background-image url('../ui/controls/gamepad-cross.png')
+    

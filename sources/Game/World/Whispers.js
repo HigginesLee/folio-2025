@@ -19,7 +19,7 @@ export class Whispers
         this.setFlames()
         this.setData()
         this.setBubble()
-        this.setModal()
+        this.setMenu()
         this.setInputs()
 
         this.game.ticker.events.on('tick', () =>
@@ -254,17 +254,17 @@ export class Whispers
         this.bubble.minDistance = 3
     }
 
-    setModal()
+    setMenu()
     {
-        this.modal = {}
+        this.menu = {}
 
-        this.modal.instance = this.game.modals.items.get('whispers')
-        this.modal.container = this.modal.instance.element
-        this.modal.inputGroup = this.modal.container.querySelector('.js-input-group')
-        this.modal.input = this.modal.inputGroup.querySelector('.js-input')
-        this.modal.previewMessage = this.modal.container.querySelector('.js-preview-message')
-        this.modal.previewMessageText = this.modal.previewMessage.querySelector('.js-text')
-        this.modal.previewMessageFlag = this.modal.previewMessage.querySelector('.js-flag')
+        this.menu.instance = this.game.menu.items.get('whispers')
+        this.menu.container = this.menu.instance.contentElement
+        this.menu.inputGroup = this.menu.container.querySelector('.js-input-group')
+        this.menu.input = this.menu.inputGroup.querySelector('.js-input')
+        this.menu.previewMessage = this.menu.instance.previewElement.querySelector('.js-preview-message')
+        this.menu.previewMessageText = this.menu.previewMessage.querySelector('.js-text')
+        this.menu.previewMessageFlag = this.menu.previewMessage.querySelector('.js-flag')
 
         const sanatize = (text = '', trim = false, limit = false, stripEmojis = false) =>
         {
@@ -283,7 +283,7 @@ export class Whispers
 
         const submit = () =>
         {
-            const sanatized = sanatize(this.modal.input.value, true, true, true)
+            const sanatized = sanatize(this.menu.input.value, true, true, true)
             
             if(sanatized.length && this.game.server.connected)
             {
@@ -291,14 +291,14 @@ export class Whispers
                 this.game.server.send({
                     type: 'whispersInsert',
                     message: sanatized,
-                    countryCode: this.modal.inputFlag.country ? this.modal.inputFlag.country.code : '',
+                    countryCode: this.menu.inputFlag.country ? this.menu.inputFlag.country.code : '',
                     x: this.game.player.position.x,
                     y: this.game.player.position.y,
                     z: this.game.player.position.z
                 })
 
-                // Close modal
-                this.game.modals.close()
+                // Close menu
+                this.game.menu.close()
 
                 // Sound
                 gsap.delayedCall(0.3, () =>
@@ -310,54 +310,54 @@ export class Whispers
 
         const updateGroup = () =>
         {
-            if(this.modal.input.value.length && this.game.server.connected)
-                this.modal.inputGroup.classList.add('is-valide')
+            if(this.menu.input.value.length && this.game.server.connected)
+                this.menu.inputGroup.classList.add('is-valide')
             else
-                this.modal.inputGroup.classList.remove('is-valide')
+                this.menu.inputGroup.classList.remove('is-valide')
         }
 
-        this.modal.input.addEventListener('input', () =>
+        this.menu.input.addEventListener('input', () =>
         {
-            const sanatized = sanatize(this.modal.input.value, false, true, true)
-            this.modal.previewMessageText.textContent = sanatized.length ? sanatized : 'Your message here'
-            this.modal.input.value = sanatized
+            const sanatized = sanatize(this.menu.input.value, false, true, true)
+            this.menu.previewMessageText.textContent = sanatized.length ? sanatized : 'Your message here'
+            this.menu.input.value = sanatized
             updateGroup()
         })
 
-        this.modal.previewMessageText.addEventListener('input', (event) =>
+        this.menu.previewMessageText.addEventListener('input', (event) =>
         {
-            const sanatized = sanatize(this.modal.previewMessageText.textContent, false, true, true)
-            this.modal.previewMessageText.textContent = sanatized
-            this.modal.input.value = sanatized
+            const sanatized = sanatize(this.menu.previewMessageText.textContent, false, true, true)
+            this.menu.previewMessageText.textContent = sanatized
+            this.menu.input.value = sanatized
             updateGroup()
         })
 
-        this.modal.previewMessageText.addEventListener('blur', () =>
+        this.menu.previewMessageText.addEventListener('blur', () =>
         {
-            const sanatized = sanatize(this.modal.input.value, true, true, true)
-            this.modal.previewMessageText.textContent = sanatized !== '' ? sanatized : 'Your message here'
+            const sanatized = sanatize(this.menu.input.value, true, true, true)
+            this.menu.previewMessageText.textContent = sanatized !== '' ? sanatized : 'Your message here'
             updateGroup()
         })
 
-        this.modal.previewMessageText.addEventListener('keydown', (event) =>
+        this.menu.previewMessageText.addEventListener('keydown', (event) =>
         {
             if(event.key === 'Enter')
                 submit()
         })
 
-        this.modal.inputGroup.addEventListener('submit', (event) =>
+        this.menu.inputGroup.addEventListener('submit', (event) =>
         {
             event.preventDefault()
 
             submit()
         })
 
-        this.modal.instance.events.on('closed', () =>
+        this.menu.instance.events.on('closed', () =>
         {
-            this.modal.previewMessageText.textContent = 'Your message here'
-            this.modal.input.value = ''
+            this.menu.previewMessageText.textContent = 'Your message here'
+            this.menu.input.value = ''
             updateGroup()
-            this.modal.inputFlag.close()
+            this.menu.inputFlag.close()
         })
             
         this.game.server.events.on('connected', () =>
@@ -373,26 +373,26 @@ export class Whispers
         /**
          * Flag
          */
-        this.modal.inputFlag = new InputFlag(this.modal.inputGroup.querySelector('.js-input-flag'))
+        this.menu.inputFlag = new InputFlag(this.menu.inputGroup.querySelector('.js-input-flag'))
         
-        this.modal.inputFlag.events.on('change', (country) =>
+        this.menu.inputFlag.events.on('change', (country) =>
         {
             if(country)
             {
-                this.modal.previewMessageFlag.classList.add('is-visible')
-                this.modal.previewMessageFlag.style.backgroundImage = `url(${country.imageUrl})`
+                this.menu.previewMessageFlag.classList.add('is-visible')
+                this.menu.previewMessageFlag.style.backgroundImage = `url(${country.imageUrl})`
             }
             else
             {
                 
-                this.modal.previewMessageFlag.classList.remove('is-visible')
+                this.menu.previewMessageFlag.classList.remove('is-visible')
             }
         })
 
-        if(this.modal.inputFlag.country)
+        if(this.menu.inputFlag.country)
         {
-            this.modal.previewMessageFlag.classList.add('is-visible')
-            this.modal.previewMessageFlag.style.backgroundImage = `url(${this.modal.inputFlag.country.imageUrl})`
+            this.menu.previewMessageFlag.classList.add('is-visible')
+            this.menu.previewMessageFlag.style.backgroundImage = `url(${this.menu.inputFlag.country.imageUrl})`
         }
     }
 
@@ -405,7 +405,7 @@ export class Whispers
         this.game.inputs.events.on('whisper', (action) =>
         {
             if(action.active)
-                this.game.modals.open('whispers')
+                this.game.menu.open('whispers')
         })
     }
 
@@ -455,7 +455,7 @@ export class Whispers
 
                 if(closestWhisper.countryCode)
                 {
-                    const country = this.modal.inputFlag.countries.get(closestWhisper.countryCode)
+                    const country = this.menu.inputFlag.countries.get(closestWhisper.countryCode)
 
                     if(country)
                         imageUrl = country.imageUrl

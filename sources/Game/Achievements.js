@@ -14,7 +14,7 @@ export class Achievements
         this.events = new Events()
 
         this.setStorage()
-        this.setModal()
+        this.setMenu()
         this.setSounds()
         this.setGroups()
         this.setItems()
@@ -79,7 +79,7 @@ export class Achievements
     {
         this.globalProgress = {}
         
-        this.globalProgress.element = this.modal.instance.element.querySelector('.js-global-progress')
+        this.globalProgress.element = this.menu.instance.contentElement.querySelector('.js-global-progress')
         this.globalProgress.currentElement = this.globalProgress.element.querySelector('.js-current')
         this.globalProgress.totalElement = this.globalProgress.element.querySelector('.js-total')
         this.globalProgress.timeElement = this.globalProgress.element.querySelector('.js-time')
@@ -154,7 +154,7 @@ export class Achievements
     setRewards()
     {
         this.rewards = {}
-        this.rewards.elements = this.modal.instance.element.querySelectorAll('.js-reward')
+        this.rewards.elements = this.menu.instance.contentElement.querySelectorAll('.js-reward')
         this.rewards.items = new Map()
         this.rewards.default = null
         this.rewards.count = this.rewards.elements.length
@@ -177,7 +177,7 @@ export class Achievements
 
                 if(changed)
                 {
-                    this.game.modals.close()
+                    this.game.menu.close()
                 }
             })
 
@@ -378,7 +378,7 @@ export class Achievements
 
     setItems()
     {
-        const itemsElement = this.modal.instance.element.querySelector('.js-items')
+        const itemsElement = this.menu.instance.contentElement.querySelector('.js-items')
 
         for(const [ name, title, description, total ] of achievementsData)
         {
@@ -457,7 +457,7 @@ export class Achievements
                         4,
                         () => {
                             this.game.inputs.interactiveButtons.clearItems()
-                            this.game.modals.open('achievements')
+                            this.game.menu.open('achievements')
                         }
                     )
                 }
@@ -465,10 +465,10 @@ export class Achievements
         }
     }
 
-    setModal()
+    setMenu()
     {
-        this.modal = {}
-        this.modal.instance = this.game.modals.items.get('achievements')
+        this.menu = {}
+        this.menu.instance = this.game.menu.items.get('achievements')
     }
 
     setSounds()
@@ -494,7 +494,7 @@ export class Achievements
 
     setReset()
     {
-        const button = this.modal.instance.element.querySelector('.js-button-reset')
+        const button = this.menu.instance.contentElement.querySelector('.js-button-reset')
 
         let clickCount = 0
 
