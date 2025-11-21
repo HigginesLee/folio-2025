@@ -87,15 +87,9 @@ export class BowlingArea extends Area
 
         // Instances
         const basePin = this.references.get('pinPhysicalDynamic')[0]
-        basePin.traverse(child =>
-        {
-            if(child.isMesh)
-            {
-                child.castShadow = true
-                child.receiveShadow = true
-                child.frustumCulled = true
-            }
-        })
+        basePin.castShadow = true
+        basePin.receiveShadow = true
+        basePin.frustumCulled = true
 
         // Update materials 
         this.game.materials.updateObject(basePin)

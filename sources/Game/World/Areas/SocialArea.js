@@ -77,8 +77,13 @@ export class SocialArea extends Area
     setFans()
     {
         const baseFan = this.references.get('fan')[0]
-        baseFan.removeFromParent()
+        baseFan.castShadow = true
+        baseFan.receiveShadow = true
+        baseFan.frustumCulled = false
 
+        // Update materials 
+        this.game.materials.updateObject(baseFan)
+        
         this.fans = {}
         this.fans.spawnerPosition = this.references.get('onlyFans')[0].position
         this.fans.count = 30

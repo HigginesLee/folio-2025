@@ -40,7 +40,7 @@ export class PoleLights
         this.glass = this.instancedGroup.meshes.find(mesh => mesh.instance.name === 'glass').instance
         
         this.setPhysics()
-        this.setEmissives()
+        // this.setEmissives()
         this.setFireflies()
         this.setSwitchInterval()
     }
@@ -65,12 +65,12 @@ export class PoleLights
         }
     }
 
-    setEmissives()
-    {
-        this.emissive = {}
-        this.emissive.offMaterial = this.game.materials.getFromName('glass')
-        this.emissive.onMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
-    }
+    // setEmissives()
+    // {
+    //     this.emissive = {}
+    //     this.emissive.offMaterial = this.game.materials.getFromName('palette')
+    //     this.emissive.onMaterial = this.game.materials.getFromName('emissiveOrangeRadialGradient')
+    // }
 
     setFireflies()
     {
@@ -98,7 +98,7 @@ export class PoleLights
         const positionAttribute = instancedArray(positions, 'vec3').toAttribute()
 
         const material = new THREE.SpriteNodeMaterial()
-        material.outputNode = this.emissive.onMaterial.outputNode
+        material.outputNode = this.game.materials.getFromName('emissiveOrangeRadialGradient').outputNode
 
         const baseTime = this.game.ticker.elapsedScaledUniform.add(hash(instanceIndex).mul(999))
         const flyOffset = vec3(
@@ -124,13 +124,13 @@ export class PoleLights
         {
             if(inInterval)
             {
-                this.glass.material = this.emissive.onMaterial
+                this.glass.visible = true
 
                 gsap.to(this.firefliesScale, { value: 1, duration: 5, overwrite: true })
             }
             else
             {
-                this.glass.material = this.emissive.offMaterial
+                this.glass.visible = false
 
                 gsap.to(this.firefliesScale, { value: 0, duration: 5, overwrite: true })
             }

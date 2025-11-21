@@ -868,7 +868,7 @@ export class CircuitArea extends Area
         
         material.outputNode = Fn(() =>
         {
-            const text = texture(textTexture)
+            const text = texture(textTexture, uv(1))
 
             return vec4(
                 mix(

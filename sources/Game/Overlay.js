@@ -67,7 +67,7 @@ export class Overlay
         // Mesh
         this.mesh = new THREE.Mesh(geometry, material)
         this.mesh.frustumCulled = false
-        this.mesh.renderOrder = 4
+        this.mesh.renderOrder = 99
         this.mesh.visible = true
         this.game.scene.add(this.mesh)
 

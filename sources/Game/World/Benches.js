@@ -9,25 +9,15 @@ export class Benches
 
         // Base and references
         const [ base, references ] = InstancedGroup.getBaseAndReferencesFromInstances(this.game.resources.benchesModel.scene.children)
-        base.traverse(child =>
-        {
-            if(child.isMesh)
-            {
-                child.castShadow = true
-                child.receiveShadow = true
-                child.frustumCulled = true
-            }
-        })
+        base.castShadow = true
+        base.receiveShadow = true
+        base.frustumCulled = true
 
         // Descriptions > To extract colliders
         const descriptions = this.game.objects.getFromModel(base, {}, {})
         
         // Update materials 
         this.game.materials.updateObject(base)
-
-        // Setup base
-        for(const child of base.children)
-            child.name = child.name.replace(/[0-9]+$/i, '') // Set clear name to retrieve it later as instances
 
         // Physics
         for(const reference of references)

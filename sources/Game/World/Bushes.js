@@ -9,7 +9,7 @@ export class Bushes
     {
         this.game = Game.getInstance()
 
-        this.colorNode = uniform(color('#8eaf58'))
+        this.colorNode = uniform(color('#a7af46'))
         this.foliage = new Foliage(this.game.resources.bushesReferences.scene.children, this.colorNode)
 
         // Debug

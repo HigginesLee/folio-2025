@@ -1298,7 +1298,7 @@ export class ProjectsArea extends Area
         
         // Hammer
         this.anvil.hammer = this.references.get('hammer')[0]
-        this.anvil.hammer.rotation.reorder('YXZ')
+        this.anvil.hammer.rotation.reorder('ZXY')
 
         // Blade
         this.anvil.blade = this.references.get('blade')[0]
@@ -1314,7 +1314,7 @@ export class ProjectsArea extends Area
         const baseOutput = material.outputNode
         material.outputNode = Fn(() =>
         {
-            const baseUv = uv().toVar()
+            const baseUv = uv(1).toVar()
 
             const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
             const emissiveOutput = emissiveColor.div(luminance(emissiveColor)).mul(intensity)
@@ -1576,7 +1576,7 @@ export class ProjectsArea extends Area
 
         // Anvil
         const time = this.game.ticker.elapsedScaled * this.anvil.frequency + Math.PI * 0.25
-        this.anvil.hammer.rotation.z = Math.pow(1 - Math.abs(Math.sin(time)), 5) - 1
+        this.anvil.hammer.rotation.x = Math.pow(1 - Math.abs(Math.sin(time)), 5) - 1
 
         // Anvil sound
         const loopTime = ((time) / Math.PI) % 1

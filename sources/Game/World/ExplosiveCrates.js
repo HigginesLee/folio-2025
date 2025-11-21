@@ -14,11 +14,8 @@ export class ExplosiveCrates
         this.references = references
         
         // Setup base
-        for(const child of base.children)
-        {
-            child.castShadow = true
-            child.receiveShadow = true
-        }
+        base.castShadow = true
+        base.receiveShadow = true
 
         // Update materials 
         this.game.materials.updateObject(base)

@@ -200,6 +200,7 @@ export class Grass
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.mesh.frustumCulled = false
         this.mesh.receiveShadow = true
+        // this.mesh.visible = false
         this.game.scene.add(this.mesh)
     }
 

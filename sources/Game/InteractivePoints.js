@@ -141,7 +141,7 @@ export class InteractivePoints
          * Diamond
          */
         // Material
-        const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: true })
+        const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: false, depthTest: true })
         materials.push(diamondMaterial)
 
         const threshold = uniform(0)
@@ -173,7 +173,7 @@ export class InteractivePoints
             this.geometries.plane,
             diamondMaterial
         )
-        diamond.renderOrder = 3
+        diamond.renderOrder = 4
         diamond.rotation.z = Math.PI * 0.25
         diamond.visible = false
         group.add(diamond)
@@ -182,7 +182,7 @@ export class InteractivePoints
          * Key
          */
         // Material
-        const keyMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: true })
+        const keyMaterial = new THREE.MeshLambertNodeMaterial({ transparent: false, depthTest: true })
         materials.push(keyMaterial)
 
         const keyOutput = Fn(([keyTexture]) =>
@@ -202,7 +202,7 @@ export class InteractivePoints
             this.geometries.plane,
             keyMaterial
         )
-        key.renderOrder = 3
+        key.renderOrder = 5
         key.scale.setScalar(0)
         key.position.z = 0.01
         key.visible = false
@@ -290,7 +290,7 @@ export class InteractivePoints
         labelTexture.needsUpdate = true
 
         // Material
-        const labelMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: true })
+        const labelMaterial = new THREE.MeshLambertNodeMaterial({ transparent: false, depthTest: true })
         materials.push(labelMaterial)
 
         const labelOffset = uniform(1)

@@ -1231,25 +1231,28 @@ export class LabArea extends Area
 
         // Burning wood
         {
+            // TODO : Use palette material directly
             const material = new MeshDefaultMaterial({
                 colorNode: color('#a88c7f')
             })
+            const baseMaterial = this.game.materials.getFromName('palette')
             
             const colorA = uniform(color('#ff6b2b'))
             const colorB = uniform(color('#ff4100'))
             const intensity = uniform(1.25)
     
-            const baseOutput = material.outputNode
+            const baseOutput = baseMaterial.outputNode
             material.outputNode = Fn(() =>
             {
-                const baseUv = uv().toVar()
+                const baseUv = uv(1).toVar()
     
-                const emissiveColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2))
+                const emissiveColor = mix(colorA, colorB, baseUv.sub(0.5).length().mul(2))
                 const emissiveOutput = emissiveColor.div(luminance(emissiveColor)).mul(intensity)
     
-                const mixStrength = baseUv.y.smoothstep(0, 1)
+                const mixStrength = baseUv.sub(0.5).length().mul(2).pow2()
                 const output = mix(baseOutput.rgb, emissiveOutput, mixStrength)
     
+                // return vec4(vec3(mixStrength), 1)
                 return vec4(output.rgb, 1)
             })()
 

@@ -104,7 +104,7 @@ export class BonfireArea extends Area
                 {
                     // Bonfire
                     this.particles.visible = true
-                    this.burn.material = this.game.materials.getFromName('emissiveOrangeRadialGradient')
+                    this.burn.visible = true
                     this.game.ticker.wait(2, () =>
                     {
                         this.particles.geometry.boundingSphere.center.y = 2
@@ -159,7 +159,7 @@ export class BonfireArea extends Area
     {
         const alphaNode = Fn(() =>
         {
-            const baseUv = uv()
+            const baseUv = uv(1)
             const distanceToCenter = baseUv.sub(0.5).length()
 
             const voronoi = texture(
@@ -186,7 +186,7 @@ export class BonfireArea extends Area
     setBurn()
     {
         this.burn = this.references.get('burn')[0]
-        this.burn.material = this.game.materials.getFromName('black')
+        this.burn.visible = false
     }
 
     update()
