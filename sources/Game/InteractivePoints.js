@@ -104,7 +104,7 @@ export class InteractivePoints
             return vec4(vec3(this.frontColor), 1)
         })
 
-        material.outputNode = iconOutput(texture(this.game.resources.interactivePointsKeyIconEnterTexture, uv()))
+        material.outputNode = iconOutput(texture(this.game.resources.interactivePointsKeyIconEnterTexture, vec2(uv().x, uv().y.oneMinus())))
 
         // Mesh
         const mesh = new THREE.Mesh(
@@ -125,7 +125,7 @@ export class InteractivePoints
                 if(this.game.inputs.gamepad.type === 'xbox')
                      iconTexture = this.game.resources.interactivePointsKeyIconATexture
 
-                material.outputNode = iconOutput(texture(iconTexture, uv()))
+                material.outputNode = iconOutput(texture(iconTexture, vec2(uv().x, uv().y.oneMinus())))
                 material.needsUpdate = true
             }
         })
@@ -139,12 +139,12 @@ export class InteractivePoints
                 if(this.game.inputs.gamepad.type === 'xbox')
                      iconTexture = this.game.resources.interactivePointsKeyIconATexture
 
-                material.outputNode = iconOutput(texture(iconTexture, uv()))
+                material.outputNode = iconOutput(texture(iconTexture, vec2(uv().x, uv().y.oneMinus())))
                 material.needsUpdate = true
             }
             else if(this.game.inputs.mode === Inputs.MODE_MOUSEKEYBOARD)
             {
-                material.outputNode = iconOutput(texture(this.game.resources.interactivePointsKeyIconEnterTexture, uv()))
+                material.outputNode = iconOutput(texture(this.game.resources.interactivePointsKeyIconEnterTexture, vec2(uv().x, uv().y.oneMinus())))
                 material.needsUpdate = true
             }
             else if(this.game.inputs.mode === Inputs.MODE_TOUCH)

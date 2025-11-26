@@ -20,10 +20,8 @@ export class Rendering
         }
     }
 
-    async init()
+    start()
     {
-        const promise = await this.setRenderer()
-        this.setPostprocessing()
         this.setStats()
 
         this.game.ticker.events.on('tick', () =>
@@ -35,11 +33,9 @@ export class Rendering
         {
             this.resize()
         })
-
-        return promise
     }
 
-    setRenderer()
+    async setRenderer()
     {
         this.renderer = new THREE.WebGPURenderer({ canvas: this.game.canvasElement, forceWebGL: false, antialias: true })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)

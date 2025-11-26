@@ -11,31 +11,31 @@ export default [
         distinctions: [ 'fwa' ], // 'awwwards', 'fwa', 'cssda'
         images:
         [
-            'threejs-journey-1.webp',
-            'threejs-journey-2.webp',
-            'threejs-journey-3.webp',
-            'threejs-journey-4.webp',
-            'threejs-journey-5.webp',
+            'threejs-journey-1.ktx',
+            'threejs-journey-2.ktx',
+            'threejs-journey-3.ktx',
+            'threejs-journey-4.ktx',
+            'threejs-journey-5.ktx',
         ]
     },
-    {
-        title: 'Chartogne Taillet',
-        titleSmall: [ 'Chartogne', 'Taillet' ],
-        url: 'https://chartogne-taillet.com',
-        attributes:
-        {
-            at: 'Immersive Garden',
-            role: 'WebGL developer',
-            with: 'Rémi Tran'
-        },
-        distinctions: [ 'awwwards', 'cssda', 'fwa' ], // 'awwwards', 'fwa', 'cssda'
-        images:
-        [
-            'chartogne-taillet-1.webp',
-            'chartogne-taillet-2.webp',
-            'chartogne-taillet-3.webp',
-        ]
-    },
+    // {
+    //     title: 'Chartogne Taillet',
+    //     titleSmall: [ 'Chartogne', 'Taillet' ],
+    //     url: 'https://chartogne-taillet.com',
+    //     attributes:
+    //     {
+    //         at: 'Immersive Garden',
+    //         role: 'WebGL developer',
+    //         with: 'Rémi Tran'
+    //     },
+    //     distinctions: [ 'awwwards', 'cssda', 'fwa' ], // 'awwwards', 'fwa', 'cssda'
+    //     images:
+    //     [
+    //         'chartogne-taillet-1.ktx',
+    //         'chartogne-taillet-2.ktx',
+    //         'chartogne-taillet-3.ktx',
+    //     ]
+    // },
     {
         title: 'Bonhomme | 10 ans',
         titleSmall: [ 'Bonhomme', '10 ans' ],
@@ -48,9 +48,9 @@ export default [
         distinctions: [ 'awwwards', 'fwa' ],
         images:
         [
-            'bonhomme-10-ans-1.webp',
-            'bonhomme-10-ans-2.webp',
-            'bonhomme-10-ans-3.webp',
+            'bonhomme-10-ans-1.ktx',
+            'bonhomme-10-ans-2.ktx',
+            'bonhomme-10-ans-3.ktx',
         ]
     },
     {
@@ -66,9 +66,9 @@ export default [
         distinctions: [ 'awwwards' ],
         images:
         [
-            'madbox-1.webp',
-            'madbox-2.webp',
-            'madbox-3.webp',
+            'madbox-1.ktx',
+            'madbox-2.ktx',
+            'madbox-3.ktx',
         ]
     },
     {
@@ -84,10 +84,10 @@ export default [
         distinctions: [ 'awwwards', 'fwa' ],
         images:
         [
-            'luni-1.webp',
-            'luni-2.webp',
-            'luni-3.webp',
-            'luni-4.webp',
+            'luni-1.ktx',
+            'luni-2.ktx',
+            'luni-3.ktx',
+            'luni-4.ktx',
         ]
     },
     {
@@ -102,9 +102,9 @@ export default [
         distinctions: [  ],
         images:
         [
-            'scout-1.webp',
-            'scout-2.webp',
-            'scout-3.webp',
+            'scout-1.ktx',
+            'scout-2.ktx',
+            'scout-3.ktx',
         ]
     },
     {
@@ -119,9 +119,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'prior-1.webp',
-            'prior-2.webp',
-            'prior-3.webp',
+            'prior-1.ktx',
+            'prior-2.ktx',
+            'prior-3.ktx',
         ]
     },
     {
@@ -136,9 +136,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'orano-1.webp',
-            'orano-2.webp',
-            'orano-3.webp',
+            'orano-1.ktx',
+            'orano-2.ktx',
+            'orano-3.ktx',
         ]
     },
     {
@@ -154,9 +154,9 @@ export default [
         distinctions: [ 'awwwards', 'cssda', 'fwa' ],
         images:
         [
-            'citrix-redbull-1.webp',
-            'citrix-redbull-2.webp',
-            'citrix-redbull-3.webp',
+            'citrix-redbull-1.ktx',
+            'citrix-redbull-2.ktx',
+            'citrix-redbull-3.ktx',
         ]
     }
 ]

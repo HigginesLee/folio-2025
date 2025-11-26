@@ -85,6 +85,17 @@ export class World
         }
     }
 
+    setPalette()
+    {
+        const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(8, 1, 1),
+            new THREE.MeshBasicNodeMaterial({ map: this.game.resources.paletteTexture }),
+        )
+        mesh.position.copy(this.game.player.position)
+        mesh.position.y += 2
+        this.game.scene.add(mesh)
+    }
+
     setTestShadow()
     {
         // Geometry

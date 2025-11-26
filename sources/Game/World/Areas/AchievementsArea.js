@@ -194,8 +194,8 @@ export class AchievementsArea extends Area
             )
             mesh.receiveShadow = true
             mesh.castShadow = true
-            mesh.lookAt(delta)
-            mesh.position.copy(origin)
+            mesh.lookAt(delta.multiplyScalar(-1))
+            mesh.position.copy(destination)
             mesh.count = count
             this.game.scene.add(mesh)
             this.objects.hideable.push(mesh)

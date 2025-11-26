@@ -1,11 +1,14 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js'
 import * as THREE from 'three/webgpu'
+import { Game } from './Game.js'
 
 export class ResourcesLoader
 {
     constructor()
     {
+        this.game = Game.getInstance()
         this.loaders = new Map()
         this.cache = new Map()
     }
@@ -18,15 +21,30 @@ export class ResourcesLoader
         let loader = null
         
         if(_type === 'texture')
+        {
             loader = new THREE.TextureLoader()
+        }
+        else if(_type === 'textureKtx')
+        {
+            loader = new KTX2Loader()
+            loader.setTranscoderPath('./basis/')
+            loader.detectSupport(this.game.rendering.renderer)
+        }
+        else if(_type === 'draco')
+        {
+            loader = new DRACOLoader()
+            loader.setDecoderPath('./draco/')
+            loader.preload()
+        }
         else if(_type === 'gltf')
         {
-            const dracoLoader = new DRACOLoader()
-            dracoLoader.setDecoderPath('./draco/')
-            // dracoLoader.preload()
+            const dracoLoader = this.getLoader('draco')
+
+            const ktx2Loader = this.getLoader('textureKtx')
             
             loader = new GLTFLoader()
             loader.setDRACOLoader(dracoLoader)
+            loader.setKTX2Loader(ktx2Loader)
         }
 
         this.loaders.set(_type, loader)

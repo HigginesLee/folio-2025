@@ -83,7 +83,8 @@ export class CareerArea extends Area
             line.size = parseFloat(line.group.userData.size)
             line.hasEnd = line.group.userData.hasEnd
             line.color = line.group.userData.color
-            
+            line.texture = this.game.resources[`${line.group.userData.texture}Texture`]
+
             line.stone = line.group.children.find(child => child.name.startsWith('stone'))
             line.stone.position.y = 0
             
@@ -100,14 +101,6 @@ export class CareerArea extends Area
 
                 const material = new THREE.MeshLambertNodeMaterial({ transparent: true })
                 
-                const baseTexture = line.textMesh.material.map
-                baseTexture.colorSpace = THREE.NoColorSpace
-                baseTexture.magFilter = THREE.LinearFilter
-                baseTexture.minFilter = THREE.LinearFilter
-                baseTexture.wrapS = THREE.ClampToEdgeWrapping
-                baseTexture.wrapT = THREE.ClampToEdgeWrapping
-                baseTexture.generateMipmaps = false
-
                 const baseColor = colors[line.color]
 
                 material.outputNode = Fn(() =>
@@ -116,7 +109,7 @@ export class CareerArea extends Area
 
                     step(baseUv.x, line.labelReveal).lessThan(0.5).discard()
 
-                    const textureColor = texture(baseTexture, baseUv)
+                    const textureColor = texture(line.texture, baseUv)
 
                     const alpha = step(0.1, max(textureColor.r, textureColor.b))
 

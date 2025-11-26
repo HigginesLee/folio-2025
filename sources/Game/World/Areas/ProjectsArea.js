@@ -354,24 +354,10 @@ export class ProjectsArea extends Area
             this.images.initiated = true
 
             this.images.mesh.visible = true
-
             const resource = this.images.resources.get(key)
 
-            this.images.textureOld = new THREE.Texture(resource.image)
-            this.images.textureOld.colorSpace = THREE.SRGBColorSpace
-            this.images.textureOld.flipY = false
-            this.images.textureOld.magFilter = THREE.LinearFilter
-            this.images.textureOld.minFilter = THREE.LinearFilter
-            this.images.textureOld.generateMipmaps = false
-            
-            this.images.textureNew = new THREE.Texture(resource.image)
-            this.images.textureNew.colorSpace = THREE.SRGBColorSpace
-            this.images.textureNew.flipY = false
-            this.images.textureNew.magFilter = THREE.LinearFilter
-            this.images.textureNew.minFilter = THREE.LinearFilter
-            this.images.textureNew.generateMipmaps = false
-
-            this.images.oldResource = this.images.textureNew.source
+            this.images.textureOld = resource.texture.clone()
+            this.images.textureNew = resource.texture.clone()
 
             // Color node
             const colorNode = Fn(() =>
@@ -423,19 +409,21 @@ export class ProjectsArea extends Area
                 )
             })()
             
-
             this.images.mesh.material = this.images.material
         }
 
         // Load ended
         this.images.loadEnded = (key) =>
         {
+            // If first image => init
             if(!this.images.initiated)
                 this.images.init(key)
 
             // Current image => Reveal
             if(this.navigation.current.images[this.images.index] === key)
             {
+                const resource = this.images.getResourceAndLoad(key)
+                this.images.textureNew.copy(resource.texture)
                 this.images.textureNew.needsUpdate = true
                 gsap.to(this.images.loadProgress, { value: 1, duration: 1, overwrite: true })
 
@@ -481,7 +469,7 @@ export class ProjectsArea extends Area
         this.images.getResourceAndLoad = (key) =>
         {
             const path = `projects/images/${key}`
-
+            
             // Try to retrieve resource
             let resource = this.images.resources.get(key)
 
@@ -491,24 +479,24 @@ export class ProjectsArea extends Area
                 resource = {}
                 resource.loaded = false
 
-                // Image
-                resource.image = new Image()
-                resource.image.width = this.images.width
-                resource.image.height = this.images.height
+                const loader = this.game.resourcesLoader.getLoader('textureKtx')
 
-                // Source
-                resource.source = new THREE.Source(resource.image)
-                
-                // Image loaded
-                resource.image.onload = () =>
-                {
-                    resource.loaded = true
-                    
-                    this.images.loadEnded(key)
-                }
+                loader.load(
+                    path,
+                    (loadedTexture) =>
+                    {
+                        resource.texture = loadedTexture
+                        resource.colorSpace = THREE.SRGBColorSpace
+                        resource.flipY = false
+                        resource.magFilter = THREE.LinearFilter
+                        resource.minFilter = THREE.LinearFilter
+                        resource.generateMipmaps = false
 
-                // Start loading
-                resource.image.src = path
+                        resource.loaded = true
+                        
+                        this.images.loadEnded(key)
+                    }
+                )
 
                 // Save
                 this.images.resources.set(key, resource)
@@ -540,12 +528,14 @@ export class ProjectsArea extends Area
             // Update textures
             if(this.images.initiated)
             {
-                this.images.textureOld.source = this.images.textureNew.source
+                this.images.textureOld.copy(this.images.textureNew)
                 this.images.textureOld.needsUpdate = true
 
-                this.images.textureNew.source = resource.source
                 if(resource.loaded)
+                {
+                    this.images.textureNew.copy(resource.texture)
                     this.images.textureNew.needsUpdate = true
+                }
             }
 
             // Animate right away

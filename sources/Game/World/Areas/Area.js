@@ -36,10 +36,6 @@ export class Area
         const children = [...this.model.children]
         for(const child of children)
         {
-            if(typeof child.userData.prevent !== 'undefined' || child.userData.prevent === true)
-            {
-                console.log(child)
-            }
             if(typeof child.userData.preventAutoAdd === 'undefined' || child.userData.preventAutoAdd === false)
             {
                 const object = this.game.objects.addFromModel(
