@@ -504,7 +504,7 @@ export class PhysicsVehicle
         }
 
         // Update controller
-        this.controller.updateVehicle(this.game.ticker.delta)
+        this.controller.updateVehicle(Math.min(this.game.ticker.deltaAverage, 1/60))
     }
 
     updatePostPhysics()

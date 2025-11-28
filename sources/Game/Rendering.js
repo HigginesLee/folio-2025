@@ -122,7 +122,7 @@ export class Rendering
     {
         if(!location.hash.match(/stats/i))
             return
-        console.log('ok')
+            
         this.stats = {}
         this.stats.feed = {}
         this.stats.update = () =>
