@@ -6,5 +6,5 @@ export default [
     { name: 'Twitch', url: 'https://www.twitch.tv/bruno_simon_dev', align: 'right' },
     { name: 'GitHub', url: 'https://github.com/brunosimon', align: 'right' },
     { name: 'LinkedIn', url: 'https://www.linkedin.com/in/simonbruno77/', align: 'left' },
-    { name: 'Discord', url: 'https://discord.com/users/202907325722263553', align: 'left' },
+    { name: 'Discord', modal: 'discord', align: 'left' },
 ]

@@ -136,7 +136,9 @@ export class Modals
         else if(this.state === Modals.CLOSED)
         {
             // Sound
-            this.game.audio.groups.get('click').play(true)
+            const sound = this.game.audio.groups.get('click')
+            if(sound)
+                sound.play(true)
 
             this.element.classList.add('is-displayed')
             item.element.classList.add('is-displayed')
@@ -174,7 +176,9 @@ export class Modals
             return
 
         // Sound
-        this.game.audio.groups.get('click').play(false)
+        const sound = this.game.audio.groups.get('click')
+        if(sound)
+            sound.play(false)
 
         this.element.classList.remove('is-visible')
 

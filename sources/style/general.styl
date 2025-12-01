@@ -107,6 +107,9 @@ ol
 
         // &:last-child
         //     margin-right 0
+        
+a.button
+        display inline-block
 
 .button
     vertical-align top
@@ -115,17 +118,22 @@ ol
     padding 0 16px
     opacity 0.8
     height 58px
+    line-height 58px
     border-radius 8px
     border 1px solid #ffffff
     white-space nowrap
+    color inherit
+    text-decoration none
 
     @media only screen and (max-width 520px)
         padding 0 13px
         height 50px
+        line-height 50px
 
     @media only screen and (max-width 400px)
         padding 0 10px
         height 45px
+        line-height 45px
 
     html:not(.is-mode-touch) &:hover
         opacity 1
