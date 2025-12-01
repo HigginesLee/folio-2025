@@ -9,15 +9,12 @@ export default class Keyboard
         this.pressed = []
 
         // Trigger up when tab visibility changes to visible
-        document.addEventListener('visibilitychange', () =>
+        window.addEventListener('blur', () =>
         {
-            if(!document.hidden)
-            {
-                for(const key of this.pressed)
-                    this.events.trigger('up', [ key ])
+            for(const key of this.pressed)
+                this.events.trigger('up', [ key ])
 
-                this.pressed = []
-            }
+            this.pressed = []
         })
 
         addEventListener('keydown', (_event) =>
