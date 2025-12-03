@@ -126,6 +126,7 @@ export class Lighting
             new THREE.IcosahedronGeometry(0.25, 1),
             new THREE.MeshBasicNodeMaterial({ wireframe: true })
         )
+        this.directionHelper.userData.preventPreRender = true
         this.directionHelper.visible = false
 
         const points = [
@@ -135,6 +136,7 @@ export class Lighting
         const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff })
         const line = new THREE.Line(lineGeometry, lineMaterial)
+        line.userData.preventPreRender = true
         this.directionHelper.add(line)
 
         this.game.scene.add(this.directionHelper)
@@ -142,6 +144,7 @@ export class Lighting
         // Shadow helper
         this.shadowHelper = new THREE.CameraHelper(this.lights[0].shadow.camera)
         this.shadowHelper.visible = false
+        this.shadowHelper.userData.preventPreRender = true
         this.game.scene.add(this.shadowHelper)
 
         if(this.game.debug.active)

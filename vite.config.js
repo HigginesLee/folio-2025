@@ -26,7 +26,7 @@ export default {
         wasm(),
         topLevelAwait(),
         restart({ restart: [ '../static/**', ] }), // Restart server on static file change
+        nodePolyfills(),
         // basicSsl(),
-        nodePolyfills()
     ]
 }

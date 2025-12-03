@@ -17,6 +17,7 @@ export class Zones
 
         this.previewGroup = new THREE.Group()
         this.previewGroup.visible = false
+        this.previewGroup.userData.preventPreRender = true
         this.game.scene.add(this.previewGroup)
 
         if(this.game.debug.active)

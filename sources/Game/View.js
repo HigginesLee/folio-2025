@@ -30,7 +30,7 @@ export class View
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
-                title: '📷 View',
+                title: '🎥 View',
                 expanded: false,
             })
 
@@ -151,6 +151,7 @@ export class View
 
         this.focusPoint.helper = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff0000', wireframe: true }))
         this.focusPoint.helper.visible = false
+        this.focusPoint.helper.userData.preventPreRender = true
         this.game.scene.add(this.focusPoint.helper)
     }
 
@@ -176,6 +177,7 @@ export class View
         // for(const point of this.optimalArea.quad2)
         // {
         //     point.helper = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff00ff', wireframe: false }))
+        //     point.helper.userData.preventPreRender = true
         //     this.game.scene.add(point.helper)
         // }
 
@@ -189,6 +191,10 @@ export class View
         this.optimalArea.helpers.center.visible = false
         this.optimalArea.helpers.near.visible = false
         this.optimalArea.helpers.far.visible = false
+        
+        this.optimalArea.helpers.center.userData.preventPreRender = true
+        this.optimalArea.helpers.near.userData.preventPreRender = true
+        this.optimalArea.helpers.far.userData.preventPreRender = true
 
         this.game.scene.add(
             this.optimalArea.helpers.center,
@@ -388,6 +394,7 @@ export class View
 
         this.cameraHelper = new THREE.CameraHelper(this.defaultCamera)
         this.cameraHelper.visible = false
+        this.cameraHelper.userData.preventPreRender = true
         this.game.scene.add(this.cameraHelper)
 
         if(this.game.debug.active)
@@ -416,6 +423,7 @@ export class View
         this.cinematic.nonIdealRatioOffset = 10
 
         // this.cinematic.targetHelper = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff00ff', wireframe: true }))
+        // this.cinematic.targetHelper.userData.preventPreRender = true
         // this.game.scene.add(this.cinematic.targetHelper)
 
         this.cinematic.start = (position, target) =>

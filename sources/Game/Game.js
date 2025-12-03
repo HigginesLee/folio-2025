@@ -44,6 +44,7 @@ import { Notifications } from './Notifications.js'
 import { Quality } from './Quality.js'
 import { Menu } from './Menu.js'
 import { Title } from './Title.js'
+import { PreRenderer } from './PreRenderer.js'
 
 export class Game
 {
@@ -183,11 +184,16 @@ export class Game
         // this.monitoring = new Monitoring()
         this.world.init(1)
 
+        // Pre-render if quality high
+        if(this.quality.level === 0)
+            PreRenderer.render()
+
         this.ticker.wait(3, () =>
         {
             this.reveal.updateStep(0)
         })
 
+        // Debug achievement
         if(this.debug.active)
         {
             this.achievements.setProgress('debug', 1)

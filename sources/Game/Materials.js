@@ -20,7 +20,7 @@ export class Materials
 
         this.setGradient()
         this.setLuminance()
-        this.setPreviews()
+        // this.setPreviews()
 
         this.createPalette()
 
@@ -207,6 +207,7 @@ export class Materials
         this.previews.boxGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5)
         this.previews.group = new THREE.Group()
         this.previews.group.visible = false
+        this.previews.group.userData.preventPreRender = true
         this.game.scene.add(this.previews.group)
         
         this.previews.update = () =>
@@ -264,7 +265,9 @@ export class Materials
     save(name, material)
     {
         this.list.set(name, material)
-        this.previews.update()
+
+        if(this.previews)
+            this.previews.update()
     }
 
     getFromName(name, baseMaterial)
