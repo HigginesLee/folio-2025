@@ -3,6 +3,6 @@ node_modules
 dist
 .vercel
 .VSCodeCounter
-.env
+.env*
 .autosave
 .wav
