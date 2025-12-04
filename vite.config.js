@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import restart from 'vite-plugin-restart'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
@@ -27,6 +28,6 @@ export default {
         topLevelAwait(),
         restart({ restart: [ '../static/**', ] }), // Restart server on static file change
         nodePolyfills(),
-        // basicSsl(),
+        process.env.VITE_SSL ? basicSsl() : null,
     ]
 }
