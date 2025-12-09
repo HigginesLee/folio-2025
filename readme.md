@@ -125,22 +125,24 @@ npm run build
 
 Run `npm run compress`
 
+Will do the following
+
 #### GLB
 
-- Traverse the `static/` folder looking for glb files (ignoring already compressed files)
-- Compress embeded texture with `etc1s --quality 255` (lossy, GPU friendly)
-- Generate new files to preserve originals
-
+- Traverses the `static/` folder looking for glb files (ignoring already compressed files)
+- Compresses embeded texture with `etc1s --quality 255` (lossy, GPU friendly)
+- Generates new files to preserve originals
 
 #### Texture files
 
-- Traverse the `static/` folder looking for `png|jpg` files (ignoring non-model related folders)
-- Compress with default preset to `--encode etc1s --qlevel 255` (lossy, GPU friendly) or specific preset (check file)
-- Generate new files to preserve originals
+- Traverses the `static/` folder looking for `png|jpg` files (ignoring non-model related folders)
+- Compresses with default preset to `--encode etc1s --qlevel 255` (lossy, GPU friendly) or specific preset according to path
+- Generates new files to preserve originals
 
 #### UI files
 
-- TODO
+- Traverses the `static/ui.` folder looking for `png|jpg` files
+- Compresses to WebP
 
 #### Resources
 
