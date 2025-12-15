@@ -1,5 +1,6 @@
 import { Events } from './Events.js'
 import { Game } from './Game.js'
+import { Inputs } from './Inputs/Inputs.js'
 import { Tabs } from './Tabs.js'
 import { CircuitArea } from './World/Areas/CircuitArea.js'
 
@@ -221,7 +222,7 @@ export class Menu
         // if(item.tabs)
         //     item.tabs.resize()
 
-        if(item.mainFocus)
+        if(item.mainFocus && this.game.inputs.mode !== Inputs.MODE_TOUCH)
         {
             requestAnimationFrame(() =>
             {
