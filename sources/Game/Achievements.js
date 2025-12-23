@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import * as THREE from 'three/webgpu'
 import achievementsData from '../data/achievements.js'
 import { Game } from './Game.js'
 import { timeToReadableString } from './utilities/time.js'
