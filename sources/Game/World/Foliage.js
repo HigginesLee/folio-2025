@@ -97,6 +97,17 @@ export class Foliage
         this.material.seeThroughEdgeMin = uniform(0.11)
         this.material.seeThroughEdgeMax = uniform(0.57)
 
+        const foliageAlpha = Fn(() =>
+        {
+            const rotatedUv = rotateUV(
+                uv(),
+                this.game.wind.offsetNode(positionLocal.xz).length().mul(2.2),
+                vec2(0.5)
+            )
+            
+            return texture(this.game.resources.foliageTexture, rotatedUv).r
+        })
+
         const alphaNode = Fn(() =>
         {
             let alpha = float(1)
@@ -111,7 +122,7 @@ export class Foliage
                 const distanceFade = smoothstep(this.material.seeThroughEdgeMin, this.material.seeThroughEdgeMax, distanceToVehicle)
 
                 // Foliage texture
-                const foliageSDF = texture(this.game.resources.foliageTexture).r
+                const foliageSDF = foliageAlpha()
 
                 // Alpha
                 alpha.assign(foliageSDF.mul(distanceFade.mul(this.material.threshold.oneMinus()).add(this.material.threshold)))
@@ -119,7 +130,7 @@ export class Foliage
             else
             {
                 // Alpha
-                alpha.assign(texture(this.game.resources.foliageTexture).r)
+                alpha.assign(foliageAlpha())
             }
 
             alpha.subAssign(this.material.threshold)
@@ -141,14 +152,11 @@ export class Foliage
         // this.material.instance.outputNode = vec4(colorNode, 1)
     
         // Position
-        const wind = this.game.wind.offsetNode(positionLocal.xz)
-        const multiplier = positionLocal.y.clamp(0, 1).mul(1)
-
         this.material.instance.positionNode = Fn( ( { object } ) =>
         {
             instance(object.count, this.instanceMatrix).toStack()
 
-            return positionLocal.add(vec3(wind.x, 0, wind.y).mul(multiplier))
+            return positionLocal//.add(vec3(wind.x, 0, wind.y).mul(multiplier))
         })()
 
         // Received shadow position
