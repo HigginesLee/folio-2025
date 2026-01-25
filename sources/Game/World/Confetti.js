@@ -110,6 +110,7 @@ export class Confetti
 
 
             confetti.mesh = new THREE.InstancedMesh(this.geometry, material, this.count)
+            confetti.mesh.visible = false
             
             for(let i = 0; i < this.count; i++)
             {
