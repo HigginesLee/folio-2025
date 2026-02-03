@@ -274,10 +274,16 @@ export class WaterSurface
 
          this.blurOutputNode = Fn(() =>
          {
-            const blurOutput = boxBlur(viewportSharedTexture(screenUV), {
-				size: 1.5,
-				separation: 3
-			}).rgb
+            // const blurOutput = boxBlur(viewportSharedTexture(screenUV), {
+			// 	size: 1.5,
+			// 	separation: 3
+			// }).rgb
+
+            // Hash blur
+            const blurOutput = hashBlur(viewportSharedTexture(screenUV), 0.01, {
+                repeats: 25,
+                premultipliedAlpha: true
+            })
 
             return vec3(blurOutput)
          })
