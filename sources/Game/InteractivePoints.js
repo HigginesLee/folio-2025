@@ -206,47 +206,6 @@ export class InteractivePoints
         const materials = []
 
         /**
-         * Diamond
-         */
-        // Material
-        const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: true })
-        materials.push(diamondMaterial)
-
-        const threshold = uniform(0)
-        const lineThickness = uniform(0.150)
-        const lineOffset = uniform(0.175)
-
-        diamondMaterial.outputNode = Fn(() =>
-        {
-            const _uv = uv()
-            const distance = max(_uv.x.sub(0.5).abs(), _uv.y.sub(0.5).abs()).mul(2)
-
-            // Line
-            const lineDistance = threshold.sub(distance).sub(lineOffset).abs()
-            const line = step(lineDistance, lineThickness.mul(0.5))
-
-            // Discard
-            distance.greaterThan(threshold).discard()
-
-            // Fogged back color
-            const foggedBackColor = this.game.fog.strength.mix(this.backColor, this.game.fog.color)
-
-            // Final color
-            const finalColor = mix(foggedBackColor, this.frontColor, line)
-            return vec4(vec3(finalColor), 1)
-        })()
-
-        // Mesh
-        const diamond = new THREE.Mesh(
-            this.geometries.plane,
-            diamondMaterial
-        )
-        diamond.renderOrder = 7
-        diamond.rotation.z = Math.PI * 0.25
-        diamond.visible = false
-        group.add(diamond)
-
-        /**
          * Label
          */
         // Canvas
@@ -327,6 +286,47 @@ export class InteractivePoints
         label.position.x = align === InteractivePoints.ALIGN_LEFT ? 0 : - label.scale.x
         label.visible = false
         group.add(label)
+
+        /**
+         * Diamond
+         */
+        // Material
+        const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: true })
+        materials.push(diamondMaterial)
+
+        const threshold = uniform(0)
+        const lineThickness = uniform(0.150)
+        const lineOffset = uniform(0.175)
+
+        diamondMaterial.outputNode = Fn(() =>
+        {
+            const _uv = uv()
+            const distance = max(_uv.x.sub(0.5).abs(), _uv.y.sub(0.5).abs()).mul(2)
+
+            // Line
+            const lineDistance = threshold.sub(distance).sub(lineOffset).abs()
+            const line = step(lineDistance, lineThickness.mul(0.5))
+
+            // Discard
+            distance.greaterThan(threshold).discard()
+
+            // Fogged back color
+            const foggedBackColor = this.game.fog.strength.mix(this.backColor, this.game.fog.color)
+
+            // Final color
+            const finalColor = mix(foggedBackColor, this.frontColor, line)
+            return vec4(vec3(finalColor), 1)
+        })()
+
+        // Mesh
+        const diamond = new THREE.Mesh(
+            this.geometries.plane,
+            diamondMaterial
+        )
+        diamond.renderOrder = 7
+        diamond.rotation.z = Math.PI * 0.25
+        diamond.visible = false
+        group.add(diamond)
 
         /**
          * Item

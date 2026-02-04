@@ -94,7 +94,7 @@ export class Whispers
         this.flames.frustumCulled = false
         this.flames.visible = true
         this.flames.position.y = 0.25
-        this.game.scene.add(this.flames)
+        this.game.scene.children.splice(1, 0, this.flames)
     }
 
     setData()
@@ -108,6 +108,7 @@ export class Whispers
             this.data.items.push({
                 index: i,
                 matrix: new THREE.Matrix4(),
+                position: new THREE.Vector3(),
                 available: true,
                 needsUpdate: false
             })
@@ -205,7 +206,7 @@ export class Whispers
                     item.available = false
                     item.message = input.message,
                     item.countryCode = input.countrycode,
-                    item.position = new THREE.Vector3(input.x, input.y, input.z)
+                    item.position.set(input.x, input.y, input.z)
                     item.matrix.setPosition(item.position)
                     item.needsUpdate = true
                 }
@@ -438,14 +439,31 @@ export class Whispers
 
     update()
     {
-        // Data
+        // Sort and update matrices
         let instanceMatrixNeedsUpdate = false
+
+        for(const item of this.data.items)
+        {
+            item.oldRevealValue = this.revealArray[item.index]
+            if(item.needsUpdate)
+                instanceMatrixNeedsUpdate = true
+        }
+
+        if(instanceMatrixNeedsUpdate)
+        {
+            this.data.items.sort((a, b) => (a.position.x + a.position.z) - (b.position.x + b.position.z))
+            let i = 0
+            for(const item of this.data.items)
+            {
+                item.index = i++
+                this.revealArray[item.index] = item.oldRevealValue
+            }
+        }
 
         for(const item of this.data.items)
         {
             if(item.needsUpdate)
             {
-                instanceMatrixNeedsUpdate = true
                 this.flames.setMatrixAt(item.index, item.matrix)
                 item.needsUpdate = false
             }

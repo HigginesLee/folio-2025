@@ -183,7 +183,6 @@ export class Game
         this.player = new Player()
         this.closingManager = new ClosingManager()
         this.interactivePoints = new InteractivePoints()
-        this.overlay = new Overlay()
         this.konamiCode = new KonamiCode()
         this.achievements = new Achievements()
         this.tornado = new Tornado()
@@ -191,6 +190,7 @@ export class Game
         this.title = new Title()
         // this.monitoring = new Monitoring()
         this.world.step(1)
+        this.overlay = new Overlay()
 
         // Pre-render if quality high
         if(this.quality.level === 0 && this.rendering.renderer.backend.isWebGPUBackend)

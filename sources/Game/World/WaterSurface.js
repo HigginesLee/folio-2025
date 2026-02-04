@@ -391,10 +391,10 @@ export class WaterSurface
         this.mesh.scale.setScalar(halfExtent * 2)
 
         this.mesh.position.y = this.game.water.surfaceElevation
-        this.mesh.castShadow = true
+        // this.mesh.castShadow = true
         // this.mesh.receiveShadow = true
         // this.mesh.renderOrder = -1
-        this.game.scene.add(this.mesh)
+        this.game.scene.children.unshift(this.mesh)
 
         this.game.viewport.events.on('throttleChange', () =>
         {

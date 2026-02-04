@@ -15,7 +15,7 @@ export class Rendering
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '📸 Rendering',
-                expanded: true,
+                expanded: false,
             })
         }
     }
@@ -37,10 +37,16 @@ export class Rendering
 
     async setRenderer()
     {
-        this.renderer = new THREE.WebGPURenderer({ canvas: this.game.canvasElement, powerPreference: 'high-performance', forceWebGL: false, antialias: this.game.viewport.ratio < 2 })
+        this.renderer = new THREE.WebGPURenderer({
+            canvas: this.game.canvasElement,
+            powerPreference: 'high-performance',
+            forceWebGL: false,
+            antialias: this.game.viewport.ratio < 2
+        })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
         this.renderer.setPixelRatio(this.game.viewport.pixelRatio)
-        this.renderer.sortObjects = true
+        this.renderer.sortObjects = false
+
         this.renderer.domElement.classList.add('experience')
         this.renderer.shadowMap.enabled = true
         // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
