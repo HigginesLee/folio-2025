@@ -262,7 +262,7 @@ export class Objects
         
         if(object.visual)
         {
-            if(object.visual.parent)
+            if(object.visual.parent && object.visual.parent !== object.visual.object3D.parent)
                 object.visual.parent.add(object.visual.object3D)
             object.visual.object3D.position.copy(object.physical.initialState.position)
             object.visual.object3D.quaternion.copy(object.physical.initialState.rotation)
@@ -297,7 +297,7 @@ export class Objects
         if(object.physical)
             object.physical.body.setEnabled(true)
 
-        if(object.visual)
+        if(object.visual && object.visual.parent !== object.visual.object3D.parent)
             object.visual.parent.add(object.visual.object3D)
     }
 

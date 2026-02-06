@@ -135,4 +135,9 @@ export class Overlay
                 callback()
         } })
     }
+
+    moveOnTop()
+    {
+        this.game.scene.add(this.mesh)
+    }
 }

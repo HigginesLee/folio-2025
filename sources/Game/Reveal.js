@@ -217,6 +217,8 @@ export class Reveal
             this.game.world.intro.destroy()
             this.game.world.intro = null
 
+            this.game.overlay.moveOnTop()
+
             this.game.server.start()
 
             this.game.ticker.events.off('tick', this.update)
