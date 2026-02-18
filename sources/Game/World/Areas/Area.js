@@ -116,10 +116,25 @@ export class Area
         this.frustum.radius = zoneReference[0].scale.x
         this.frustum.isIn = null
         this.frustum.alwaysVisible = false
+
+        // // Helper
+        // const helperColor = new THREE.Color('orange').multiplyScalar(4)
+        // const helper = new THREE.Mesh(
+        //     new THREE.TorusGeometry(zoneReference[0].scale.x, 0.1, 16, 64),
+        //     new THREE.MeshBasicNodeMaterial({ color: helperColor })
+        // )
+        // helper.rotation.x = Math.PI * 0.5
+        // helper.position.set(
+        //     zoneReference[0].position.x,
+        //     0.5,
+        //     zoneReference[0].position.z
+        // )
+        // this.game.scene.add(helper)
+
         
         this.frustum.test = () =>
         {
-            const isIn = circleIntersectsPolygon(
+            const isVisible = this.frustum.alwaysVisible || circleIntersectsPolygon(
                 this.frustum.position,
                 this.frustum.radius,
                 [
@@ -130,17 +145,15 @@ export class Area
                 ]
             )
 
-            if(
-                this.frustum.alwaysVisible ||
-                isIn
-            )
+            if(isVisible)
             {
                 if(this.frustum.isIn === false || this.frustum.isIn === null)
                 {
                     for(const object3D of this.objects.hideable)
-                    {
                         object3D.visible = true
-                    }
+
+                    if(typeof helper !== 'undefined')
+                        helper.material.color.set('#44ff88').multiplyScalar(2)
 
                     this.frustum.isIn = true
                     this.events.trigger('frustumIn')
@@ -151,9 +164,10 @@ export class Area
                 if(this.frustum.isIn === true || this.frustum.isIn === null)
                 {
                     for(const object3D of this.objects.hideable)
-                    {
                         object3D.visible = false
-                    }
+
+                    if(typeof helper !== 'undefined')
+                        helper.material.color.set('#ff4488').multiplyScalar(2)
 
                     this.frustum.isIn = false
                     this.events.trigger('frustumOut')

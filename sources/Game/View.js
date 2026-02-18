@@ -7,6 +7,8 @@ import gsap from 'gsap'
 import { Pointer } from './Inputs/Pointer.js'
 import { Inputs } from './Inputs/Inputs.js'
 import { alea } from 'seedrandom'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { Line2 } from 'three/examples/jsm/lines/webgpu/Line2.js'
 
 CameraControls.install( { THREE: THREE } )
 
@@ -186,33 +188,27 @@ export class View
             { base: new THREE.Vector2(), offseted: new THREE.Vector2(), helper: null },
         ]
 
-        // for(const point of this.optimalArea.quad2)
-        // {
-        //     point.helper = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff00ff', wireframe: false }))
-        //     point.helper.userData.preventPreRender = true
-        //     this.game.scene.add(point.helper)
-        // }
-
         this.optimalArea.floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
 
-        this.optimalArea.helpers = {}
-        this.optimalArea.helpers.center = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#00ff00', wireframe: false }))
-        this.optimalArea.helpers.near = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff0000', wireframe: false }))
-        this.optimalArea.helpers.far = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#0000ff', wireframe: false }))
+        // // Helper
+        // this.optimalArea.quad2Helper = {}
 
-        this.optimalArea.helpers.center.visible = false
-        this.optimalArea.helpers.near.visible = false
-        this.optimalArea.helpers.far.visible = false
-        
-        this.optimalArea.helpers.center.userData.preventPreRender = true
-        this.optimalArea.helpers.near.userData.preventPreRender = true
-        this.optimalArea.helpers.far.userData.preventPreRender = true
+        // const geometry = new LineGeometry()
+        // geometry.setPositions([
+        //     0, 0, 0,
+        //     0, 0, 0,
+        //     0, 0, 0,
+        //     0, 0, 0
+        // ])
 
-        this.game.scene.add(
-            this.optimalArea.helpers.center,
-            this.optimalArea.helpers.near,
-            this.optimalArea.helpers.far
-        )
+        // const material = new THREE.Line2NodeMaterial({
+        //     color: new THREE.Color('orange').multiplyScalar(4),
+        //     linewidth: 10
+        // })
+
+        // this.optimalArea.quad2Helper = new Line2(geometry, material)
+        // this.optimalArea.quad2Helper.computeLineDistances()
+        // this.game.scene.add(this.optimalArea.quad2Helper)
 
         this.optimalArea.update = () =>
         {
@@ -237,13 +233,11 @@ export class View
             // First near/far diagonal
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, -1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.nearPosition)
-            this.optimalArea.helpers.near.position.copy(this.optimalArea.nearPosition)
             this.optimalArea.quad2[0].base.x = this.optimalArea.nearPosition.x
             this.optimalArea.quad2[0].base.y = this.optimalArea.nearPosition.z
 
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, 1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.farPosition)
-            this.optimalArea.helpers.far.position.copy(this.optimalArea.farPosition)
             this.optimalArea.quad2[2].base.x = this.optimalArea.farPosition.x
             this.optimalArea.quad2[2].base.y = this.optimalArea.farPosition.z
 
@@ -252,13 +246,11 @@ export class View
             // Second near/far diagonal
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(-1, -1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.nearPosition)
-            this.optimalArea.helpers.near.position.copy(this.optimalArea.nearPosition)
             this.optimalArea.quad2[3].base.x = this.optimalArea.nearPosition.x
             this.optimalArea.quad2[3].base.y = this.optimalArea.nearPosition.z
 
             this.optimalArea.raycaster.setFromCamera(new THREE.Vector2(1, 1), this.defaultCamera)
             this.optimalArea.raycaster.ray.intersectPlane(this.optimalArea.floorPlane, this.optimalArea.farPosition)
-            this.optimalArea.helpers.far.position.copy(this.optimalArea.farPosition)
             this.optimalArea.quad2[1].base.x = this.optimalArea.farPosition.x
             this.optimalArea.quad2[1].base.y = this.optimalArea.farPosition.z
 
@@ -266,7 +258,6 @@ export class View
 
             // Center between the two diagonal centers
             this.optimalArea.basePosition = centerA.clone().lerp(centerB, 0.5)
-            this.optimalArea.helpers.center.position.copy(this.optimalArea.basePosition)
 
             // Radius
             this.optimalArea.radius = this.optimalArea.basePosition.distanceTo(this.optimalArea.farPosition)
@@ -772,12 +763,21 @@ export class View
         {
             point.offseted.x = point.base.x + this.focusPoint.position.x
             point.offseted.y = point.base.y + this.focusPoint.position.z
+        }
 
-            if(point.helper)
-            {
-                point.helper.position.x = point.offseted.x
-                point.helper.position.z = point.offseted.y
-            }
+        // Helper
+        if(this.optimalArea.quad2Helper && this.optimalArea.quad2Helper.visible)
+        {
+            const geometry = new LineGeometry()
+            geometry.setPositions([
+                this.optimalArea.quad2[0].offseted.x, 0.5, this.optimalArea.quad2[0].offseted.y,
+                this.optimalArea.quad2[1].offseted.x, 0.5, this.optimalArea.quad2[1].offseted.y,
+                this.optimalArea.quad2[2].offseted.x, 0.5, this.optimalArea.quad2[2].offseted.y,
+                this.optimalArea.quad2[3].offseted.x, 0.5, this.optimalArea.quad2[3].offseted.y,
+                this.optimalArea.quad2[0].offseted.x, 0.5, this.optimalArea.quad2[0].offseted.y,
+            ])
+
+            this.optimalArea.quad2Helper.geometry = geometry
         }
 
         // Speed lines
