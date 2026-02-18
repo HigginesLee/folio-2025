@@ -152,7 +152,7 @@ export class View
                 this.focusPoint.isTracking = true
         })
 
-        this.focusPoint.helper = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicNodeMaterial({ color: '#ff0000', wireframe: true }))
+        this.focusPoint.helper = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), new THREE.MeshBasicNodeMaterial({ color: new THREE.Color('orange').multiplyScalar(4), wireframe: false }))
         this.focusPoint.helper.visible = false
         this.focusPoint.helper.userData.preventPreRender = true
         this.game.scene.add(this.focusPoint.helper)
@@ -688,6 +688,9 @@ export class View
         const smoothFocusPointDelta = newSmoothFocusPoint.clone().sub(this.focusPoint.smoothedPosition)
         const focusPointSpeed = Math.hypot(smoothFocusPointDelta.x, smoothFocusPointDelta.z) / this.game.ticker.delta
         this.focusPoint.smoothedPosition.copy(newSmoothFocusPoint)
+
+        if(this.focusPoint.helper.visible)
+            this.focusPoint.helper.position.copy(newSmoothFocusPoint)
         
         // Default mode
         if(this.mode === View.MODE_DEFAULT)
