@@ -604,10 +604,6 @@ export class Player
         this.position.copy(this.game.physicalVehicle.position)
         this.position2 = new THREE.Vector2(this.position.x, this.position.z)
         
-        // Reset on fall
-        if(this.position.y < -5)
-            this.game.physicalVehicle.moveTo(this.basePosition)
-
         // View > Focus point
         this.game.view.focusPoint.trackedPosition.copy(this.position)
 
