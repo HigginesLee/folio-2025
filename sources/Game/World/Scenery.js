@@ -50,8 +50,6 @@ export class Scenery
         const mesh = this.references.items.get('road')[0]
         
         this.road.color = uniform(color('#383039'))
-        this.road.middleLighten = uniform(0.1)
-        this.road.glitterViewMultiplier = 0.01
         this.road.glitterVariation = uniform(0)
         this.road.glitterScarcity = uniform(100)
         this.road.glitterIntensity = uniform(0.3)
@@ -107,9 +105,10 @@ export class Scenery
                 expanded: false
             })
             this.game.debug.addThreeColorBinding(debugPanel, this.road.color.value, 'color')
-            debugPanel.addBinding(this.road.glitterScarcity, 'value', { label: 'glitterScarcity', min: 0, max: 1, step: 0.001 })
-            debugPanel.addBinding(this.road.glitterLighten, 'value', { label: 'glitterLighten', min: 0, max: 1, step: 0.001 })
-            debugPanel.addBinding(this.road.middleLighten, 'value', { label: 'middleLighten', min: 0, max: 0.2, step: 0.001 })
+            debugPanel.addBinding(this.road.glitterScarcity, 'value', { label: 'glitterScarcity', min: 100, max: 10000, step: 1 })
+            debugPanel.addBinding(this.road.glitterIntensity, 'value', { label: 'glitterIntensity', min: 0, max: 10, step: 0.01 })
+            debugPanel.addBinding(this.road.glitterPerlinFrequency, 'value', { label: 'glitterPerlinFrequency', min: 0, max: 0.1, step: 0.0001 })
+            debugPanel.addBinding(this.road.glitterHashFrequency, 'value', { label: 'glitterHashFrequency', min: 0, max: 1, step: 0.0001 })
         }
     }
 
