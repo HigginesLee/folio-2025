@@ -73,7 +73,7 @@ export class Rendering
 
     setPostprocessing()
     {
-        this.postProcessing = new THREE.PostProcessing(this.renderer)
+        this.postProcessing = new THREE.RenderPipeline(this.renderer)
 
         const scenePass = pass(this.game.scene, this.game.view.camera)
         const scenePassColor = scenePass.getTextureNode('output')

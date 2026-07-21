@@ -360,12 +360,7 @@ export class WaterSurface
         //     return finalOuput
         // })()
         
-        material.castShadowNode = Fn(() =>
-        {
-            this.detailsMask().lessThan(0.5).discard()
-
-            return vec4(0, 1, 1, 1)
-        })()
+        material.maskShadowNode = this.detailsMask().greaterThan(0.5)
 
         // Already exist
         if(this.material)

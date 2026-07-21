@@ -4,7 +4,7 @@ import { Area } from './Area.js'
 import { Fn, texture, uv, vec2, vec3, vec4 } from 'three/tsl'
 import gsap from 'gsap'
 
-export class TimeMachine extends Area
+export class TimeMachineArea extends Area
 {
     constructor(model)
     {

@@ -121,9 +121,6 @@ export class Leaves
             transparent: true
         })
 
-        // Shadow
-        this.material.castShadowNode = vec4(0.5, 1, 1, 1)
-
         // Position
         this.material.positionNode = Fn(() =>
         {

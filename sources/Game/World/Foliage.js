@@ -163,12 +163,7 @@ export class Foliage
         this.material.shadowOffset = uniform(1)
         this.material.instance.receivedShadowPositionNode = positionLocal.add(this.game.lighting.directionUniform.mul(this.material.shadowOffset))
 
-        this.material.instance.castShadowNode = Fn(() =>
-        {
-            const alphaColor = texture(this.game.resources.foliageTexture).r
-            alphaColor.lessThan(0.5).discard()
-            return vec4(0, 1, 1, 1)
-        })()
+        this.material.instance.maskShadowNode = texture(this.game.resources.foliageTexture).r.greaterThan(0.5)
     }
 
     setFromReferences()
